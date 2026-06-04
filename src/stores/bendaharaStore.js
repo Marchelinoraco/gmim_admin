@@ -30,7 +30,7 @@ export const useBendaharaStore = defineStore("bendahara", () => {
 
   /**
    * Menambah bendahara baru — status selalu "active"
-   * @param {object} input - Data bendahara (namaLengkap, email, gerejaId, telepon, role)
+   * @param {object} input - Data bendahara (namaLengkap, email, username, gerejaId, telepon, role)
    * @returns {object} bendahara yang baru dibuat
    */
   function tambahBendahara(input) {
@@ -39,6 +39,7 @@ export const useBendaharaStore = defineStore("bendahara", () => {
       id: _generateId(),
       namaLengkap: input.namaLengkap,
       email: input.email,
+      username: input.username,
       gerejaId: input.gerejaId,
       telepon: input.telepon,
       role: input.role,
@@ -137,6 +138,18 @@ export const useBendaharaStore = defineStore("bendahara", () => {
   }
 
   /**
+   * Cek apakah username sudah terdaftar secara global.
+   * @param {string} username
+   * @param {string|null} excludeId
+   * @returns {boolean}
+   */
+  function isUsernameTerdaftar(username, excludeId = null) {
+    return bendaharaList.value.some(
+      (b) => b.username?.toLowerCase() === username?.toLowerCase() && b.id !== excludeId
+    )
+  }
+
+  /**
    * Filter bendahara berdasarkan pencarian, gereja, dan status (logika AND)
    * @param {string} pencarian - Kata kunci pencarian (nama, email, atau nama gereja)
    * @param {string} filterGereja - gerejaId untuk filter (kosong = semua)
@@ -227,6 +240,7 @@ export const useBendaharaStore = defineStore("bendahara", () => {
     toggleStatus,
     resetPassword,
     isEmailTerdaftar,
+    isUsernameTerdaftar,
     filterBendahara
   }
 })

@@ -1,49 +1,124 @@
 <script setup>
-import { computed } from "vue"
+import { reactive, ref } from "vue"
 import { useRouter } from "vue-router"
 import { useGerejaStore } from "@/stores/gerejaStore"
-import FormGereja from "@/components/gereja/FormGereja.vue"
-import BaseCard from "@/components/ui/BaseCard.vue"
-import BaseAlert from "@/components/ui/BaseAlert.vue"
+import { ArrowLeft, Save } from "lucide-vue-next"
+import Card from "@/components/ui/Card.vue"
+import Button from "@/components/ui/Button.vue"
+import Input from "@/components/ui/Input.vue"
+import Label from "@/components/ui/Label.vue"
+import Select from "@/components/ui/Select.vue"
+import Alert from "@/components/ui/Alert.vue"
 
-const router = useRouter()
+const router      = useRouter()
 const gerejaStore = useGerejaStore()
 
-const notifikasi = computed(() => gerejaStore.notifikasi)
+const form = reactive({
+  nama: "", alamat: "", namaPendeta: "", telepon: "",
+  subdomain: "", paketLangganan: "Basic", statusLangganan: "trial",
+})
+const errors  = reactive({})
+const loading = ref(false)
 
-function handleSubmit(data) {
-  const hasil = gerejaStore.tambahGereja(data)
-  if (hasil) {
-    router.push(`/super-admin/gereja/${hasil.id}`)
-  }
+const paketOptions = [
+  { value: "Basic", label: "Basic" },
+  { value: "Standard", label: "Standard" },
+  { value: "Premium", label: "Premium" },
+]
+const langgananOptions = [
+  { value: "trial", label: "Trial" },
+  { value: "active", label: "Active" },
+  { value: "expired", label: "Expired" },
+]
+
+function validate() {
+  Object.keys(errors).forEach(k => delete errors[k])
+  if (!form.nama.trim())      errors.nama = "Nama gereja wajib diisi."
+  if (!form.subdomain.trim()) errors.subdomain = "Subdomain wajib diisi."
+  if (!form.namaPendeta.trim()) errors.namaPendeta = "Nama pendeta wajib diisi."
+  return Object.keys(errors).length === 0
 }
 
-function handleCancel() {
-  router.push("/super-admin/gereja")
-}
-
-function dismissNotifikasi() {
-  gerejaStore.notifikasi = null
+function handleSubmit() {
+  if (!validate()) return
+  loading.value = true
+  const result = gerejaStore.tambahGereja({ ...form })
+  loading.value = false
+  if (result !== false) router.push("/super-admin/gereja")
 }
 </script>
 
 <template>
   <div class="space-y-6">
-    <div class="flex items-center justify-between">
-      <h1 class="text-2xl font-bold text-gray-800">Tambah Gereja</h1>
+    <div class="flex items-center gap-3">
+      <Button variant="ghost" size="icon" @click="router.back()">
+        <ArrowLeft class="h-4 w-4" />
+      </Button>
+      <div>
+        <h1 class="text-2xl font-bold tracking-tight">Tambah Gereja</h1>
+        <p class="text-muted-foreground text-sm">Daftarkan gereja baru ke sistem</p>
+      </div>
     </div>
 
-    <BaseAlert
-      v-if="notifikasi"
-      :type="notifikasi.type"
-      :message="notifikasi.message"
-      :auto-hide="notifikasi.type === 'success'"
-      :auto-hide-duration="3000"
-      @dismiss="dismissNotifikasi"
-    />
+    <Alert v-if="gerejaStore.notifikasi?.type === 'error'" variant="destructive">
+      {{ gerejaStore.notifikasi.message }}
+    </Alert>
 
-    <BaseCard title="Form Tambah Gereja">
-      <FormGereja mode="tambah" @submit="handleSubmit" @cancel="handleCancel" />
-    </BaseCard>
+    <form class="space-y-6" @submit.prevent="handleSubmit">
+      <Card class="p-6 space-y-5">
+        <h2 class="font-semibold text-sm text-muted-foreground uppercase tracking-wider">Informasi Gereja</h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="space-y-1.5">
+            <Label for="nama">Nama Gereja <span class="text-destructive">*</span></Label>
+            <Input id="nama" v-model="form.nama" placeholder="GMIM Sion Manado" />
+            <p v-if="errors.nama" class="text-xs text-destructive">{{ errors.nama }}</p>
+          </div>
+          <div class="space-y-1.5">
+            <Label for="pendeta">Nama Pendeta <span class="text-destructive">*</span></Label>
+            <Input id="pendeta" v-model="form.namaPendeta" placeholder="Pdt. Nama Lengkap" />
+            <p v-if="errors.namaPendeta" class="text-xs text-destructive">{{ errors.namaPendeta }}</p>
+          </div>
+          <div class="space-y-1.5 md:col-span-2">
+            <Label for="alamat">Alamat</Label>
+            <Input id="alamat" v-model="form.alamat" placeholder="Jl. Nama Jalan, Kota" />
+          </div>
+          <div class="space-y-1.5">
+            <Label for="telepon">Telepon</Label>
+            <Input id="telepon" v-model="form.telepon" placeholder="0811-xxxx-xxxx" />
+          </div>
+          <div class="space-y-1.5">
+            <Label for="subdomain">Subdomain <span class="text-destructive">*</span></Label>
+            <div class="flex items-center gap-0">
+              <Input id="subdomain" v-model="form.subdomain" placeholder="nama-gereja" class="rounded-r-none" />
+              <span class="inline-flex items-center h-10 px-3 rounded-r-md border border-l-0 border-input bg-muted text-muted-foreground text-sm">.gmimapp.com</span>
+            </div>
+            <p v-if="errors.subdomain" class="text-xs text-destructive">{{ errors.subdomain }}</p>
+          </div>
+        </div>
+      </Card>
+
+      <Card class="p-6 space-y-5">
+        <h2 class="font-semibold text-sm text-muted-foreground uppercase tracking-wider">Langganan</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="space-y-1.5">
+            <Label>Paket Langganan</Label>
+            <Select v-model="form.paketLangganan" :options="paketOptions" />
+          </div>
+          <div class="space-y-1.5">
+            <Label>Status Langganan</Label>
+            <Select v-model="form.statusLangganan" :options="langgananOptions" />
+          </div>
+        </div>
+      </Card>
+
+      <div class="flex items-center justify-end gap-3">
+        <Button type="button" variant="outline" @click="router.back()">Batal</Button>
+        <Button type="submit" :disabled="loading">
+          <Save class="h-4 w-4" />
+          {{ loading ? "Menyimpan..." : "Simpan Gereja" }}
+        </Button>
+      </div>
+    </form>
   </div>
 </template>

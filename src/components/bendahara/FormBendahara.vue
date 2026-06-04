@@ -26,15 +26,15 @@ const props = defineProps({
 const emit = defineEmits(["submit", "cancel"])
 
 const gerejaStore = useGerejaStore()
-
 // === FORM STATE ===
 const form = ref({
   namaLengkap: "",
   email: "",
+  username: "",
   password: "",
   gerejaId: "",
   telepon: "",
-  role: ""
+  role: "Bendahara"
 })
 
 const errors = ref({})
@@ -47,11 +47,7 @@ const gerejaOptions = computed(() => {
   }))
 })
 
-const roleOptions = [
-  { value: "Admin Gereja", label: "Admin Gereja" },
-  { value: "Bendahara", label: "Bendahara" },
-  { value: "Viewer / Majelis", label: "Viewer / Majelis" }
-]
+const roleOptions = [{ value: "Bendahara", label: "Bendahara" }]
 
 const selectedGereja = computed(() => {
   if (!form.value.gerejaId) return null
@@ -75,6 +71,7 @@ onMounted(() => {
   if (props.initialData) {
     form.value.namaLengkap = props.initialData.namaLengkap || ""
     form.value.email = props.initialData.email || ""
+    form.value.username = props.initialData.username || ""
     form.value.gerejaId = props.initialData.gerejaId || ""
     form.value.telepon = props.initialData.telepon || ""
     form.value.role = props.initialData.role || ""
@@ -98,6 +95,7 @@ function handleSubmit() {
   errors.value = {}
 
   const data = { ...form.value }
+  data.role = "Bendahara"
   if (!isCreate) {
     delete data.password
   }
@@ -122,6 +120,14 @@ function handleCancel() {
 
     <!-- Email -->
     <BaseInput label="Email" type="email" v-model="form.email" placeholder="Masukkan email" :error="errors.email" />
+
+    <!-- Username -->
+    <BaseInput
+      label="Username"
+      v-model="form.username"
+      placeholder="Contoh: bendahara-tumpaan-1"
+      :error="errors.username"
+    />
 
     <!-- Password (hanya mode tambah) -->
     <BaseInput
@@ -179,8 +185,9 @@ function handleCancel() {
       label="Role"
       v-model="form.role"
       :options="roleOptions"
-      placeholder="-- Pilih Role --"
+      placeholder="Bendahara"
       :error="errors.role"
+      disabled
     />
 
     <!-- Tombol Aksi -->

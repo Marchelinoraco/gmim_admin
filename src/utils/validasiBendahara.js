@@ -1,4 +1,5 @@
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+const USERNAME_REGEX = /^[a-z0-9][a-z0-9-]{2,49}$/
 
 /**
  * Validasi form bendahara
@@ -19,6 +20,11 @@ export function validasiBendahara(data, isCreate = true) {
   // Email: format valid
   if (!data.email || !EMAIL_REGEX.test(data.email)) {
     errors.email = "Format email tidak valid"
+  }
+
+  // Username: unik global dicek di store, format divalidasi di sini
+  if (!data.username || !USERNAME_REGEX.test(data.username)) {
+    errors.username = "Username 3-50 karakter, huruf kecil, angka, atau tanda hubung"
   }
 
   // Password: 8-128 karakter (hanya saat create)

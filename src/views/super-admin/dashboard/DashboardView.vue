@@ -1,101 +1,139 @@
-<template>
-  <div class="space-y-6">
-    <div>
-      <h1 class="text-2xl font-bold text-gray-800">Dashboard Super Admin</h1>
-      <p class="text-gray-600 mt-1">Selamat datang di panel administrasi GMIM Jadi</p>
-    </div>
-
-    <!-- Stats Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-      <div class="bg-white rounded-lg shadow p-6">
-        <div class="flex items-center">
-          <div class="p-3 rounded-full bg-blue-100 text-blue-600">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
-              />
-            </svg>
-          </div>
-          <div class="ml-4">
-            <p class="text-sm font-medium text-gray-500">Total Gereja</p>
-            <p class="text-2xl font-semibold text-gray-800">{{ totalGereja }}</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="bg-white rounded-lg shadow p-6">
-        <div class="flex items-center">
-          <div class="p-3 rounded-full bg-green-100 text-green-600">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
-              />
-            </svg>
-          </div>
-          <div class="ml-4">
-            <p class="text-sm font-medium text-gray-500">Total Bendahara</p>
-            <p class="text-2xl font-semibold text-gray-800">{{ totalBendahara }}</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="bg-white rounded-lg shadow p-6">
-        <div class="flex items-center">
-          <div class="p-3 rounded-full bg-yellow-100 text-yellow-600">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-          </div>
-          <div class="ml-4">
-            <p class="text-sm font-medium text-gray-500">Domain Pending</p>
-            <p class="text-2xl font-semibold text-gray-800">{{ domainPending }}</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="bg-white rounded-lg shadow p-6">
-        <div class="flex items-center">
-          <div class="p-3 rounded-full bg-emerald-100 text-emerald-600">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-          </div>
-          <div class="ml-4">
-            <p class="text-sm font-medium text-gray-500">Domain Aktif</p>
-            <p class="text-2xl font-semibold text-gray-800">{{ domainAktif }}</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</template>
-
 <script setup>
 import { computed } from "vue"
+import { useRouter } from "vue-router"
 import { useGerejaStore } from "@/stores/gerejaStore"
 import { useBendaharaStore } from "@/stores/bendaharaStore"
+import { Church, Users, Clock, CheckCircle, TrendingUp, ArrowRight } from "lucide-vue-next"
+import Card from "@/components/ui/Card.vue"
+import Badge from "@/components/ui/Badge.vue"
+import Button from "@/components/ui/Button.vue"
 
-const gerejaStore = useGerejaStore()
+const router       = useRouter()
+const gerejaStore  = useGerejaStore()
 const bendaharaStore = useBendaharaStore()
 
-const totalGereja = computed(() => gerejaStore.gerejaList.length)
-const totalBendahara = computed(() => bendaharaStore.bendaharaList.length)
-const domainPending = computed(() => gerejaStore.gerejaList.filter((g) => g.statusDomain === "pending").length)
-const domainAktif = computed(() => gerejaStore.gerejaList.filter((g) => g.statusDomain === "aktif").length)
+const stats = computed(() => [
+  {
+    label: "Total Gereja",
+    value: gerejaStore.gerejaList.length,
+    icon:  Church,
+    color: "text-blue-600",
+    bg:    "bg-blue-50",
+    change: "+2 bulan ini",
+  },
+  {
+    label: "Total Bendahara",
+    value: bendaharaStore.bendaharaList.length,
+    icon:  Users,
+    color: "text-emerald-600",
+    bg:    "bg-emerald-50",
+    change: "+1 bulan ini",
+  },
+  {
+    label: "Domain Aktif",
+    value: gerejaStore.gerejaList.filter(g => g.statusDomain === "aktif").length,
+    icon:  CheckCircle,
+    color: "text-green-600",
+    bg:    "bg-green-50",
+    change: "domain aktif",
+  },
+  {
+    label: "Domain Pending",
+    value: gerejaStore.gerejaList.filter(g => g.statusDomain === "pending").length,
+    icon:  Clock,
+    color: "text-amber-600",
+    bg:    "bg-amber-50",
+    change: "perlu ditinjau",
+  },
+])
+
+const recentGereja = computed(() =>
+  [...gerejaStore.gerejaList]
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+    .slice(0, 5)
+)
+
+const statusLanggananVariant = {
+  active:  "success",
+  trial:   "warning",
+  expired: "destructive",
+}
+
+const statusDomainVariant = {
+  aktif:    "success",
+  pending:  "warning",
+  nonaktif: "secondary",
+}
 </script>
+
+<template>
+  <div class="space-y-6">
+    <!-- Page Header -->
+    <div>
+      <h1 class="text-2xl font-bold tracking-tight">Dashboard</h1>
+      <p class="text-muted-foreground mt-1">Selamat datang di panel administrasi GMIM</p>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <Card v-for="stat in stats" :key="stat.label" class="p-6">
+        <div class="flex items-start justify-between">
+          <div>
+            <p class="text-sm font-medium text-muted-foreground">{{ stat.label }}</p>
+            <p class="text-3xl font-bold mt-2 tracking-tight">{{ stat.value }}</p>
+            <p class="text-xs text-muted-foreground mt-1 flex items-center gap-1">
+              <TrendingUp class="h-3 w-3" />
+              {{ stat.change }}
+            </p>
+          </div>
+          <div :class="['p-2.5 rounded-lg', stat.bg]">
+            <component :is="stat.icon" :class="['h-5 w-5', stat.color]" />
+          </div>
+        </div>
+      </Card>
+    </div>
+
+    <!-- Recent Gereja -->
+    <Card>
+      <div class="flex items-center justify-between px-6 py-4 border-b">
+        <div>
+          <h2 class="font-semibold">Gereja Terbaru</h2>
+          <p class="text-sm text-muted-foreground">5 gereja terbaru yang terdaftar</p>
+        </div>
+        <Button variant="outline" size="sm" @click="router.push('/super-admin/gereja')">
+          Lihat Semua
+          <ArrowRight class="h-3 w-3 ml-1" />
+        </Button>
+      </div>
+
+      <div class="divide-y">
+        <div
+          v-for="gereja in recentGereja"
+          :key="gereja.id"
+          class="flex items-center gap-4 px-6 py-4 hover:bg-muted/30 transition-colors cursor-pointer"
+          @click="router.push(`/super-admin/gereja/${gereja.id}`)"
+        >
+          <div class="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 shrink-0">
+            <Church class="h-4 w-4 text-primary" />
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-medium truncate">{{ gereja.nama }}</p>
+            <p class="text-xs text-muted-foreground truncate">{{ gereja.subdomain }}.gmimapp.com</p>
+          </div>
+          <div class="flex items-center gap-2 shrink-0">
+            <Badge :variant="statusLanggananVariant[gereja.statusLangganan] || 'secondary'">
+              {{ gereja.statusLangganan }}
+            </Badge>
+            <Badge :variant="statusDomainVariant[gereja.statusDomain] || 'secondary'">
+              {{ gereja.statusDomain }}
+            </Badge>
+          </div>
+        </div>
+
+        <div v-if="recentGereja.length === 0" class="px-6 py-8 text-center text-sm text-muted-foreground">
+          Belum ada gereja terdaftar.
+        </div>
+      </div>
+    </Card>
+  </div>
+</template>

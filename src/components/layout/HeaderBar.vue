@@ -1,62 +1,53 @@
 <script setup>
 import { computed } from "vue"
 import { useRoute } from "vue-router"
+import { Menu, Shield } from "lucide-vue-next"
 
 const emit = defineEmits(["toggleSidebar"])
-
 const route = useRoute()
 
-const pageTitle = computed(() => {
-  const titles = {
-    "/super-admin/dashboard": "Dashboard",
-    "/super-admin/gereja": "Daftar Gereja",
-    "/super-admin/gereja/tambah": "Tambah Gereja",
-    "/super-admin/bendahara": "Daftar Bendahara",
-    "/super-admin/bendahara/tambah": "Tambah Bendahara"
-  }
-
-  // Check exact match first
-  if (titles[route.path]) return titles[route.path]
-
-  // Check for detail/edit routes
-  if (route.path.match(/^\/super-admin\/gereja\/[^/]+\/edit$/)) return "Edit Gereja"
-  if (route.path.match(/^\/super-admin\/gereja\/[^/]+$/)) return "Detail Gereja"
-  if (route.path.match(/^\/super-admin\/bendahara\/[^/]+\/edit$/)) return "Edit Bendahara"
-  if (route.path.match(/^\/super-admin\/bendahara\/[^/]+$/)) return "Detail Bendahara"
-
-  return "Dashboard"
+const breadcrumb = computed(() => {
+  const p = route.path
+  if (p.startsWith("/super-admin/gereja/") && p.endsWith("/edit")) return ["Gereja", "Edit"]
+  if (p.match(/^\/super-admin\/gereja\/[^/]+$/))                  return ["Gereja", "Detail"]
+  if (p === "/super-admin/gereja/tambah")                          return ["Gereja", "Tambah"]
+  if (p === "/super-admin/gereja")                                 return ["Gereja"]
+  if (p.startsWith("/super-admin/bendahara/") && p.endsWith("/edit")) return ["Bendahara", "Edit"]
+  if (p.match(/^\/super-admin\/bendahara\/[^/]+$/))               return ["Bendahara", "Detail"]
+  if (p === "/super-admin/bendahara/tambah")                       return ["Bendahara", "Tambah"]
+  if (p === "/super-admin/bendahara")                              return ["Bendahara"]
+  return ["Dashboard"]
 })
 </script>
 
 <template>
-  <header
-    class="sticky top-0 z-20 flex items-center justify-between h-16 px-4 md:px-6 bg-white border-b border-gray-200"
-  >
-    <!-- Left: Mobile menu toggle + Page title -->
+  <header class="sticky top-0 z-20 flex items-center justify-between h-16 px-4 md:px-6 bg-background border-b border-border">
     <div class="flex items-center gap-3">
-      <!-- Mobile hamburger button -->
       <button
+        class="md:hidden inline-flex items-center justify-center h-9 w-9 rounded-md border border-input bg-background hover:bg-accent transition-colors"
         @click="emit('toggleSidebar')"
-        class="md:hidden p-2 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors"
-        aria-label="Toggle sidebar"
       >
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-        </svg>
+        <Menu class="h-4 w-4" />
       </button>
 
-      <h1 class="text-lg font-semibold text-gray-900">{{ pageTitle }}</h1>
+      <!-- Breadcrumb -->
+      <nav class="flex items-center gap-1.5 text-sm">
+        <span class="text-muted-foreground">Super Admin</span>
+        <template v-for="(crumb, i) in breadcrumb" :key="i">
+          <span class="text-muted-foreground">/</span>
+          <span :class="i === breadcrumb.length - 1 ? 'font-medium text-foreground' : 'text-muted-foreground'">
+            {{ crumb }}
+          </span>
+        </template>
+      </nav>
     </div>
 
-    <!-- Right: Admin badge -->
-    <div class="flex items-center gap-3">
-      <div class="flex items-center gap-2">
-        <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-          <span class="text-blue-600 text-sm font-medium">SA</span>
+    <div class="flex items-center gap-2">
+      <div class="flex items-center gap-2 px-3 py-1.5 rounded-md bg-muted">
+        <div class="flex h-6 w-6 items-center justify-center rounded-full bg-primary">
+          <Shield class="h-3 w-3 text-primary-foreground" />
         </div>
-        <div class="hidden sm:block text-right">
-          <p class="text-sm font-medium text-gray-700 leading-tight">Super Admin</p>
-        </div>
+        <span class="text-sm font-medium hidden sm:block">Super Admin</span>
       </div>
     </div>
   </header>

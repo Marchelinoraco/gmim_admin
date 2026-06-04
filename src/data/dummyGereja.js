@@ -47,5 +47,20 @@ export const dummyGereja = [
     langgananBerakhir: "2026-03-12",
     createdAt: "12/09/2025 08:00:00",
     updatedAt: "12/09/2025 08:00:00"
+  },
+  {
+    id: "gmim-eben-haezer-tumpaan-1",
+    nama: "GMIM Eben Haezer Tumpaan 1",
+    alamat: "Tumpaan 1",
+    namaPendeta: "",
+    telepon: "",
+    subdomain: "gmim-eben-haezer-tumpaan-1",
+    statusLangganan: "trial",
+    paketLangganan: "Basic",
+    statusDomain: "aktif",
+    bergabungPada: "2026-05-23",
+    langgananBerakhir: "",
+    createdAt: "23/05/2026 07:34:54",
+    updatedAt: "23/05/2026 07:34:54"
   }
 ]

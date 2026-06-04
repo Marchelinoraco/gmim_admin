@@ -17,6 +17,7 @@ const emit = defineEmits(["detail", "edit", "toggleStatus"])
 
 const columns = [
   { key: "namaLengkap", label: "Nama", sortable: true },
+  { key: "username", label: "Username", sortable: true },
   { key: "email", label: "Email", sortable: true },
   { key: "gereja", label: "Gereja", sortable: true },
   { key: "telepon", label: "Telepon" },
@@ -44,6 +45,10 @@ function isGerejaNonaktif(gerejaId) {
 
     <template #cell-email="{ row }">
       <span class="text-gray-600">{{ row.email }}</span>
+    </template>
+
+    <template #cell-username="{ row }">
+      <span class="font-mono text-sm text-gray-700">{{ row.username }}</span>
     </template>
 
     <template #cell-gereja="{ row }">
