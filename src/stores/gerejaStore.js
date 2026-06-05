@@ -116,7 +116,6 @@ export const useGerejaStore = defineStore("gereja", () => {
     // Penghapusan gereja via admin harus melalui lifecycle resmi (suspend → export → delete)
     notifikasi.value = { type: "error", message: "Penghapusan gereja harus melalui proses offboarding. Hubungi tim teknis." }
     return false
-    }
   }
 
   function isSubdomainTersedia(subdomain, excludeId = null) {
