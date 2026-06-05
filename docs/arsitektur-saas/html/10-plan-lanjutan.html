@@ -1,0 +1,485 @@
+<!doctype html>
+<html lang="id" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>10 · Plan Fitur Lanjutan — Skema GMIM</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = { theme: { extend: {
+        fontFamily: { sans: ["Inter", "ui-sans-serif", "system-ui"] },
+        colors: { brand: { 50:"#f0f6ff",100:"#e0edff",200:"#cce1ff",300:"#a3caff",400:"#75aaff",500:"#4785ff",600:"#255deb",700:"#1d48c8",800:"#1e3e9f",900:"#1e367d",950:"#14224c" } },
+      } } };
+    </script>
+    <style>.mermaid { display:flex; justify-content:center; }</style>
+  </head>
+  <body class="bg-slate-50 font-sans text-slate-700 antialiased">
+    <div class="mx-auto flex max-w-[100rem] flex-col lg:flex-row">
+      <aside class="sticky top-0 hidden h-screen w-72 flex-shrink-0 border-r border-slate-200 bg-white/80 p-5 backdrop-blur lg:block">
+        <a href="index.html" class="mb-6 flex items-center gap-3">
+          <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-brand-600 to-brand-800 text-2xl font-extrabold text-white shadow-lg ring-2 ring-white">G</div>
+          <div><div class="text-sm font-extrabold leading-tight text-slate-900">Keuangan GMIM</div><div class="text-xs font-medium text-slate-500">Skema Arsitektur SaaS</div></div>
+        </a>
+        <nav id="sidebar-nav" class="space-y-1"></nav>
+      </aside>
+      <div class="sticky top-0 z-40 flex items-center justify-between border-b border-slate-200 bg-white/90 px-4 py-3 backdrop-blur lg:hidden">
+        <span class="font-extrabold text-slate-900">Arsitektur GMIM</span>
+        <select id="mobile-nav" class="rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-sm font-semibold text-slate-700"></select>
+      </div>
+
+      <main class="min-w-0 flex-1 px-5 py-10 sm:px-8 lg:px-12">
+        <div class="mx-auto max-w-4xl">
+          <div class="mb-2 text-sm font-extrabold uppercase tracking-wider text-violet-600">Bagian 10 · Plan (belum dieksekusi)</div>
+          <h1 class="text-3xl font-extrabold text-slate-900 sm:text-4xl">Plan Fitur Lanjutan</h1>
+          <p class="mt-3 text-lg text-slate-600">Lima rencana fitur berdasarkan kebutuhan nyata bendahara gereja: pencatatan kas yang akurat, onboarding anti-duplikat, jaminan data saat upgrade, visibilitas transaksi tertunda, dan pelacakan multi-pos kas (tunai/bank/Midtrans).</p>
+
+          <!-- Ringkasan kartu -->
+          <div class="mt-8 grid gap-4 sm:grid-cols-2">
+            <a href="#f1" class="rounded-2xl border-2 border-brand-300 bg-brand-50 p-5 transition hover:-translate-y-0.5 hover:shadow-md">
+              <div class="flex items-center justify-between"><span class="text-xs font-extrabold text-brand-700">F-1 · Prioritas Tinggi</span><span class="rounded-full bg-brand-600 px-2 py-0.5 text-xs font-bold text-white">💵</span></div>
+              <div class="mt-1 font-extrabold text-slate-900">Cash Basis Accounting</div>
+              <p class="mt-1 text-sm text-slate-600">Kas masuk saldo hanya saat uang fisik benar-benar diterima bendahara.</p>
+            </a>
+            <a href="#f4" class="rounded-2xl border-2 border-amber-300 bg-amber-50 p-5 transition hover:-translate-y-0.5 hover:shadow-md">
+              <div class="flex items-center justify-between"><span class="text-xs font-extrabold text-amber-700">F-4 · Prioritas Sedang</span><span class="rounded-full bg-amber-500 px-2 py-0.5 text-xs font-bold text-white">📋</span></div>
+              <div class="mt-1 font-extrabold text-slate-900">Menu "Belum Diterima"</div>
+              <p class="mt-1 text-sm text-slate-600">Daftar transaksi dicatat tapi kasnya belum berpindah. Konfirmasi per item.</p>
+            </a>
+            <a href="#f2" class="rounded-2xl border-2 border-emerald-300 bg-emerald-50 p-5 transition hover:-translate-y-0.5 hover:shadow-md">
+              <div class="flex items-center justify-between"><span class="text-xs font-extrabold text-emerald-700">F-2 · Prioritas Sedang</span><span class="rounded-full bg-emerald-600 px-2 py-0.5 text-xs font-bold text-white">📍</span></div>
+              <div class="mt-1 font-extrabold text-slate-900">Slug Otomatis + Lokasi</div>
+              <p class="mt-1 text-sm text-slate-600">Dropdown wilayah; slug unik dibangkitkan server. Anti nama gereja kembar.</p>
+            </a>
+            <a href="#f3" class="rounded-2xl border-2 border-rose-300 bg-rose-50 p-5 transition hover:-translate-y-0.5 hover:shadow-md">
+              <div class="flex items-center justify-between"><span class="text-xs font-extrabold text-rose-700">F-3 · Prioritas Tinggi</span><span class="rounded-full bg-rose-600 px-2 py-0.5 text-xs font-bold text-white">🔒</span></div>
+              <div class="mt-1 font-extrabold text-slate-900">Trial → Berbayar</div>
+              <p class="mt-1 text-sm text-slate-600">Data tidak pernah hilang. Upgrade = bayar & lanjut, bukan mulai ulang.</p>
+            </a>
+            <a href="#f5" class="rounded-2xl border-2 border-violet-300 bg-violet-50 p-5 transition hover:-translate-y-0.5 hover:shadow-md">
+              <div class="flex items-center justify-between"><span class="text-xs font-extrabold text-violet-700">F-5 · Prioritas Tinggi</span><span class="rounded-full bg-violet-600 px-2 py-0.5 text-xs font-bold text-white">🏦</span></div>
+              <div class="mt-1 font-extrabold text-slate-900">Multi-Pos Kas</div>
+              <p class="mt-1 text-sm text-slate-600">Tunai / Bank / Midtrans terpisah. Transfer antar pos ter-track penuh.</p>
+            </a>
+            <a href="#f6" class="rounded-2xl border-2 border-slate-300 bg-slate-50 p-5 transition hover:-translate-y-0.5 hover:shadow-md">
+              <div class="flex items-center justify-between"><span class="text-xs font-extrabold text-slate-700">F-6 · Prioritas Tinggi</span><span class="rounded-full bg-slate-600 px-2 py-0.5 text-xs font-bold text-white">↩️</span></div>
+              <div class="mt-1 font-extrabold text-slate-900">Reversal / Koreksi</div>
+              <p class="mt-1 text-sm text-slate-600">Tanpa hapus diam-diam — koreksi = entry pembalik ber-audit.</p>
+            </a>
+          </div>
+
+          <!-- Keputusan Final -->
+          <div class="mt-8 rounded-2xl border-2 border-emerald-300 bg-emerald-50 p-6">
+            <div class="flex items-center gap-2"><span class="text-lg">✅</span><h2 class="text-xl font-extrabold text-emerald-900">Keputusan Final (2026-06-05) — Mengikat</h2></div>
+            <div class="mt-4 grid gap-3 sm:grid-cols-2">
+              <div class="rounded-xl bg-white p-3 text-sm shadow-sm"><b class="text-emerald-700">KP-1 · Pos dipilih saat konfirmasi</b><div class="text-slate-600">Bukan saat input. Transaksi "belum diterima" tidak terikat pos manapun; pos diisi di menu F-4.</div></div>
+              <div class="rounded-xl bg-white p-3 text-sm shadow-sm"><b class="text-emerald-700">KP-2 · Saldo pos tolak minus</b><div class="text-slate-600">Pengeluaran &gt; saldo pos ditolak (422). Harus mutasi dulu.</div></div>
+              <div class="rounded-xl bg-white p-3 text-sm shadow-sm"><b class="text-emerald-700">KP-3 · Wilayah Sulut</b><div class="text-slate-600">Provinsi terkunci Sulawesi Utara; data ringan dari backend.</div></div>
+              <div class="rounded-xl bg-white p-3 text-sm shadow-sm"><b class="text-emerald-700">KP-4 · Reversal masuk scope</b><div class="text-slate-600">Tanpa hard-delete; koreksi = entry pembalik ber-audit (F-6).</div></div>
+            </div>
+            <div class="mt-3 rounded-xl border border-emerald-200 bg-white/60 p-3 text-xs text-emerald-800">
+              <b>Gap teknis ditutup:</b> tutup buku snapshot saldo semua pos · backfill cerdas (midtrans→pos Midtrans) · tabel baru pakai <code>BelongsToGereja</code> + uji isolasi · feature flag <code>multi_pos_kas</code>.
+            </div>
+          </div>
+
+          <!-- ============ F-1 ============ -->
+          <h2 id="f1" class="mt-14 flex items-center gap-3 text-2xl font-extrabold text-slate-900"><span class="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-600 text-base text-white">F1</span> Cash Basis Accounting</h2>
+
+          <div class="mt-5 rounded-2xl border-2 border-brand-200 bg-brand-50 p-5 text-sm text-brand-900">
+            💡 <b>Masalah nyata:</b> Penatua mengumpulkan persembahan saat ibadah kolom, lalu menyerahkan ke bendahara <b>beberapa hari kemudian</b>. Dengan sistem sekarang, transaksi langsung dihitung ke saldo — padahal uang fisiknya belum ada di tangan bendahara.
+          </div>
+
+          <p class="mt-5 text-slate-600"><b>Prinsip cash basis:</b> transaksi baru masuk saldo ketika kas <b>benar-benar berpindah tangan</b>.</p>
+
+          <h3 class="mt-7 text-lg font-extrabold text-slate-900">Perubahan Model Data</h3>
+          <div class="mt-3 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+            <table class="w-full text-left text-sm">
+              <thead class="bg-slate-50 text-xs font-extrabold uppercase tracking-wide text-slate-500"><tr><th class="px-4 py-3">Tabel</th><th class="px-4 py-3">Kolom baru</th><th class="px-4 py-3">Default</th></tr></thead>
+              <tbody class="divide-y divide-slate-100">
+                <tr><td class="px-4 py-2.5 font-semibold">pemasukan</td><td class="px-4 py-2.5"><code>status_kas</code> enum(sudah_diterima, belum_diterima)<br/><code>tanggal_diterima</code> date null</td><td class="px-4 py-2.5"><code>sudah_diterima</code></td></tr>
+                <tr><td class="px-4 py-2.5 font-semibold">pengeluaran</td><td class="px-4 py-2.5"><code>status_kas</code> enum(sudah_dikeluarkan, belum_dikeluarkan)<br/><code>tanggal_dikeluarkan</code> date null</td><td class="px-4 py-2.5"><code>sudah_dikeluarkan</code></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="mt-3 rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-800">✅ <b>Default aman:</b> semua data lama otomatis diasumsikan "sudah diterima" — tidak ada perubahan perilaku untuk transaksi yang sudah ada.</div>
+
+          <h3 class="mt-7 text-lg font-extrabold text-slate-900">Aturan Saldo</h3>
+          <div class="mt-3 rounded-2xl bg-slate-900 p-5 font-mono text-sm text-slate-100">
+            <div class="text-slate-400">// Cash basis — hanya kas yang sudah berpindah tangan</div>
+            <div class="mt-2">Saldo = Σ pemasukan <span class="text-emerald-400">(approved/settled AND status_kas=sudah_diterima)</span></div>
+            <div class="ml-12">− Σ pengeluaran <span class="text-rose-400">(status_kas=sudah_dikeluarkan)</span></div>
+          </div>
+
+          <div class="mt-5 grid gap-4 sm:grid-cols-2">
+            <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+              <h4 class="font-extrabold text-emerald-700">✓ Masuk saldo</h4>
+              <ul class="mt-2 space-y-1 text-sm text-slate-700">
+                <li>Pemasukan approved + sudah diterima</li>
+                <li>Pengeluaran + sudah dikeluarkan</li>
+              </ul>
+            </div>
+            <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+              <h4 class="font-extrabold text-amber-600">✗ Belum masuk saldo</h4>
+              <ul class="mt-2 space-y-1 text-sm text-slate-700">
+                <li>Pemasukan approved + <b>belum diterima</b></li>
+                <li>Pemasukan masih pending (belum disetujui)</li>
+                <li>Pengeluaran + <b>belum dikeluarkan</b></li>
+              </ul>
+            </div>
+          </div>
+
+          <h3 class="mt-7 text-lg font-extrabold text-slate-900">Toggle di Form Input</h3>
+          <div class="mt-3 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <div class="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm">
+              <div class="font-semibold text-slate-700">Status Penerimaan Kas</div>
+              <label class="mt-2 flex items-center gap-2"><input type="radio" name="demo-kas" checked class="h-4 w-4" /> <span>Uang sudah diterima bendahara <span class="text-xs text-slate-400">(default)</span></span></label>
+              <label class="mt-1.5 flex items-center gap-2"><input type="radio" name="demo-kas" class="h-4 w-4" /> <span>Uang belum diterima (catat dulu)</span></label>
+            </div>
+            <p class="mt-3 text-sm text-slate-600">Jika "belum diterima" → <code>tanggal_diterima = null</code>. Bendahara dapat konfirmasi penerimaan nanti dari menu <a href="#f4" class="font-semibold text-brand-700 hover:underline">F-4 (Belum Diterima)</a>.</p>
+          </div>
+
+          <h3 class="mt-7 text-lg font-extrabold text-slate-900">Dampak ke Halaman Lain</h3>
+          <div class="mt-3 grid gap-3 sm:grid-cols-2">
+            <div class="rounded-xl border border-slate-200 bg-white p-4 text-sm shadow-sm"><b>Daftar Pemasukan</b><div class="text-slate-600">Kolom "Kas": badge Diterima (hijau) / Belum (kuning) + filter chip baru</div></div>
+            <div class="rounded-xl border border-slate-200 bg-white p-4 text-sm shadow-sm"><b>Rekap Mingguan/Bulanan</b><div class="text-slate-600">Hanya hitung <code>status_kas=sudah_diterima</code></div></div>
+            <div class="rounded-xl border border-slate-200 bg-white p-4 text-sm shadow-sm"><b>Dashboard</b><div class="text-slate-600">Saldo mengikuti aturan cash basis</div></div>
+            <div class="rounded-xl border border-slate-200 bg-white p-4 text-sm shadow-sm"><b>Arus Kas</b><div class="text-slate-600">Dua angka: "Dicatat" vs "Kas Masuk Nyata"</div></div>
+          </div>
+
+          <!-- ============ F-4 ============ -->
+          <h2 id="f4" class="mt-14 flex items-center gap-3 text-2xl font-extrabold text-slate-900"><span class="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-500 text-base text-white">F4</span> Menu "Transaksi Belum Diterima"</h2>
+          <div class="mt-3 rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800">🔗 Bergantung pada F-1 — membutuhkan kolom <code>status_kas</code>.</div>
+
+          <h3 class="mt-7 text-lg font-extrabold text-slate-900">Posisi di Sidebar</h3>
+          <div class="mt-3 rounded-2xl border border-slate-200 bg-white p-5 font-mono text-sm shadow-sm">
+            <div class="text-slate-400">LAPORAN</div>
+            <div class="ml-3">├── Arus Kas</div>
+            <div class="ml-3">├── Rekap Mingguan</div>
+            <div class="ml-3">├── Rekap Bulanan</div>
+            <div class="ml-3 text-amber-600 font-bold">└── Belum Diterima <span class="rounded-full bg-rose-500 px-1.5 text-xs text-white">3</span> <span class="text-slate-400 font-normal">← baru, badge counter merah</span></div>
+          </div>
+
+          <h3 class="mt-7 text-lg font-extrabold text-slate-900">Isi Halaman — Dua Tabel</h3>
+          <div class="mt-3 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+            <div class="border-b border-slate-100 bg-slate-50 px-4 py-2 text-xs font-extrabold uppercase text-slate-500">Pemasukan belum diterima</div>
+            <table class="w-full text-left text-sm">
+              <thead class="text-xs font-semibold text-slate-400"><tr><th class="px-4 py-2">Tgl catat</th><th class="px-4 py-2">Nama Persembahan</th><th class="px-4 py-2">Jumlah</th><th class="px-4 py-2">Dicatat oleh</th><th class="px-4 py-2">Aksi</th></tr></thead>
+              <tbody class="divide-y divide-slate-100">
+                <tr><td class="px-4 py-2.5">05/06/2026</td><td class="px-4 py-2.5">Kolom 1</td><td class="px-4 py-2.5 font-semibold">Rp 200.000</td><td class="px-4 py-2.5">Pnt. Markus</td><td class="px-4 py-2.5"><span class="rounded-lg bg-emerald-600 px-2.5 py-1 text-xs font-bold text-white">✓ Konfirmasi Terima</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3 class="mt-7 text-lg font-extrabold text-slate-900">Summary di Atas Tabel</h3>
+          <div class="mt-3 grid gap-3 sm:grid-cols-3">
+            <div class="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-center"><div class="text-xs text-amber-700">Belum masuk kas</div><div class="mt-1 text-xl font-extrabold text-amber-800">Rp 1.610.000</div></div>
+            <div class="rounded-2xl border border-rose-200 bg-rose-50 p-4 text-center"><div class="text-xs text-rose-700">Belum keluar kas</div><div class="mt-1 text-xl font-extrabold text-rose-800">Rp 500.000</div></div>
+            <div class="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-center"><div class="text-xs text-emerald-700">Posisi kas nyata</div><div class="mt-1 text-xl font-extrabold text-emerald-800">Rp 13.500.000</div></div>
+          </div>
+
+          <h3 class="mt-7 text-lg font-extrabold text-slate-900">Endpoint Baru</h3>
+          <div class="mt-3 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+            <table class="w-full text-left text-sm">
+              <thead class="bg-slate-50 text-xs font-extrabold uppercase tracking-wide text-slate-500"><tr><th class="px-4 py-3">Method</th><th class="px-4 py-3">Path</th><th class="px-4 py-3">Deskripsi</th></tr></thead>
+              <tbody class="divide-y divide-slate-100 font-mono text-xs">
+                <tr><td class="px-4 py-2.5"><span class="rounded bg-emerald-100 px-2 py-0.5 font-bold text-emerald-700">GET</span></td><td class="px-4 py-2.5">/gereja/{g}/transaksi-pending-kas</td><td class="px-4 py-2.5 font-sans text-slate-600">List belum-kas</td></tr>
+                <tr><td class="px-4 py-2.5"><span class="rounded bg-amber-100 px-2 py-0.5 font-bold text-amber-700">PATCH</span></td><td class="px-4 py-2.5">/gereja/{g}/pemasukan/{id}/konfirmasi-kas</td><td class="px-4 py-2.5 font-sans text-slate-600">Tandai diterima</td></tr>
+                <tr><td class="px-4 py-2.5"><span class="rounded bg-amber-100 px-2 py-0.5 font-bold text-amber-700">PATCH</span></td><td class="px-4 py-2.5">/gereja/{g}/pengeluaran/{id}/konfirmasi-kas</td><td class="px-4 py-2.5 font-sans text-slate-600">Tandai dikeluarkan</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- ============ F-2 ============ -->
+          <h2 id="f2" class="mt-14 flex items-center gap-3 text-2xl font-extrabold text-slate-900"><span class="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-600 text-base text-white">F2</span> Slug Otomatis + Lokasi Gereja</h2>
+
+          <div class="mt-5 rounded-2xl border-2 border-emerald-200 bg-emerald-50 p-5 text-sm text-emerald-900">
+            💡 <b>Masalah:</b> Dua gereja bisa bernama sama di wilayah berbeda (mis. "GMIM Sion" di Tomohon &amp; Manado). Slug manual rawan duplikat. <b>Solusi:</b> slug dibangkitkan otomatis dari nama + kode wilayah + ID pendek → unik secara struktural.
+          </div>
+
+          <h3 class="mt-7 text-lg font-extrabold text-slate-900">Form Daftar Baru</h3>
+          <div class="mt-3 grid gap-4 sm:grid-cols-2">
+            <div class="rounded-2xl border border-rose-200 bg-rose-50 p-5">
+              <div class="text-xs font-extrabold uppercase text-rose-600">❌ Hapus</div>
+              <div class="mt-2 rounded-lg border border-slate-200 bg-white p-3 text-sm text-slate-400 line-through">Alamat Gereja (slug) [input manual]</div>
+            </div>
+            <div class="rounded-2xl border border-emerald-200 bg-emerald-50 p-5">
+              <div class="text-xs font-extrabold uppercase text-emerald-600">✅ Tambah — dropdown cascade</div>
+              <div class="mt-2 space-y-1.5 text-sm">
+                <div class="rounded-lg border border-slate-200 bg-white px-3 py-2">Provinsi <span class="float-right text-slate-400">▼</span></div>
+                <div class="rounded-lg border border-slate-200 bg-white px-3 py-2">Kabupaten/Kota <span class="float-right text-slate-400">▼</span></div>
+                <div class="rounded-lg border border-slate-200 bg-white px-3 py-2">Kecamatan <span class="float-right text-slate-400">▼</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="mt-3 rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm text-slate-600">📦 <b>Data wilayah:</b> JSON statis dari <code>cahyadsn/wilayah</code> (~3MB, lazy load) — tanpa API eksternal.</div>
+
+          <h3 class="mt-7 text-lg font-extrabold text-slate-900">Aturan Generate Slug</h3>
+          <div class="mt-3 rounded-2xl bg-slate-900 p-5 font-mono text-sm text-slate-100">
+            <div class="text-slate-400">slug = {nama-gereja}-{kecamatan}-{6char-ulid}</div>
+            <div class="mt-3"><span class="text-slate-400">Nama   :</span> "GMIM Sion Tomohon"</div>
+            <div><span class="text-slate-400">Kec.   :</span> "tomohon-tengah"</div>
+            <div><span class="text-slate-400">ULID   :</span> "a3k9m2"</div>
+            <div class="mt-1 text-emerald-400">→ sion-tomohon-tengah-a3k9m2</div>
+            <div class="mt-3 text-slate-500">// Gereja ke-2 dengan nama & kecamatan sama:</div>
+            <div class="text-emerald-400">→ sion-tomohon-tengah-b7x1n9 <span class="text-slate-500">(ULID beda → tetap unik)</span></div>
+          </div>
+
+          <div class="mt-3 rounded-xl border border-brand-200 bg-brand-50 p-3 text-sm text-brand-900">🔒 Field <code>slug</code> tetap di database (untuk URL <code>/g/&lt;slug&gt;</code> &amp; subdomain masa depan), hanya <b>disembunyikan dari tampilan frontend</b>.</div>
+
+          <!-- ============ F-3 ============ -->
+          <h2 id="f3" class="mt-14 flex items-center gap-3 text-2xl font-extrabold text-slate-900"><span class="flex h-9 w-9 items-center justify-center rounded-xl bg-rose-600 text-base text-white">F3</span> Trial → Langganan Berbayar</h2>
+
+          <div class="mt-5 rounded-2xl border-2 border-rose-300 bg-rose-50 p-5 text-base font-semibold text-rose-900">
+            🔒 Prinsip: <b>Data tidak pernah hilang karena status langganan.</b> Upgrade = bayar dan lanjut, bukan daftar ulang.
+          </div>
+
+          <h3 class="mt-7 text-lg font-extrabold text-slate-900">State Machine</h3>
+          <div class="mt-3 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <pre class="mermaid">
+flowchart LR
+    D([Daftar Gratis]):::start --> T[trial<br/>14 hari]:::trial
+    T -->|bayar| A[active]:::active
+    T -->|habis| E[expired<br/>read-only<br/>data tetap ada]:::expired
+    A -->|jatuh tempo| P[past_due<br/>grace 7 hari]:::pastdue
+    P -->|bayar| A
+    P -->|grace habis| E
+    E -->|UPGRADE: bayar| A
+    classDef start fill:#fef9c3,stroke:#ca8a04,color:#713f12;
+    classDef trial fill:#e0edff,stroke:#255deb,color:#14224c;
+    classDef active fill:#dcfce7,stroke:#16a34a,color:#14532d;
+    classDef pastdue fill:#fed7aa,stroke:#ea580c,color:#7c2d12;
+    classDef expired fill:#ffe4e6,stroke:#e11d48,color:#881337;
+            </pre>
+          </div>
+
+          <h3 class="mt-7 text-lg font-extrabold text-slate-900">Yang Dijamin Tersimpan Saat Expired</h3>
+          <div class="mt-3 grid gap-2 sm:grid-cols-3">
+            <div class="rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm"><b>Transaksi</b><div class="text-emerald-700">read-only, tidak dihapus</div></div>
+            <div class="rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm"><b>Kategori &amp; Aset</b><div class="text-emerald-700">tetap ada</div></div>
+            <div class="rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm"><b>Akun pengguna</b><div class="text-emerald-700">bisa login (read)</div></div>
+            <div class="rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm"><b>Konfigurasi Midtrans</b><div class="text-emerald-700">tetap ada</div></div>
+            <div class="rounded-xl border-2 border-brand-300 bg-brand-50 p-3 text-sm sm:col-span-2"><b>Slug &amp; URL gereja</b><div class="text-brand-700"><code>/g/sion-tomohon-tengah-a3k9m2</code> <b>tidak berubah selamanya</b> — bookmark tetap valid</div></div>
+          </div>
+
+          <h3 class="mt-7 text-lg font-extrabold text-slate-900">Alur Upgrade Expired → Active</h3>
+          <div class="mt-3 rounded-2xl border border-slate-200 bg-white p-5 text-sm shadow-sm">
+            <ol class="space-y-2">
+              <li class="flex gap-3"><span class="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-brand-600 text-xs font-bold text-white">1</span> Login → redirect ke billing (402 dari API)</li>
+              <li class="flex gap-3"><span class="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-brand-600 text-xs font-bold text-white">2</span> Pilih paket → checkout → Midtrans Snap (akun platform)</li>
+              <li class="flex gap-3"><span class="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-brand-600 text-xs font-bold text-white">3</span> Bayar → webhook → <code>status = active</code></li>
+              <li class="flex gap-3"><span class="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-emerald-600 text-xs font-bold text-white">4</span> Akses penuh kembali — dashboard langsung tampil riwayat transaksi lama</li>
+            </ol>
+          </div>
+
+          <h3 class="mt-7 text-lg font-extrabold text-slate-900">Retention Policy</h3>
+          <div class="mt-3 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+            <table class="w-full text-left text-sm">
+              <thead class="bg-slate-50 text-xs font-extrabold uppercase tracking-wide text-slate-500"><tr><th class="px-4 py-3">Sejak expired</th><th class="px-4 py-3">Aksi</th></tr></thead>
+              <tbody class="divide-y divide-slate-100">
+                <tr><td class="px-4 py-2.5 font-semibold">&gt; 90 hari</td><td class="px-4 py-2.5">Email "Data akan dihapus dalam 30 hari"</td></tr>
+                <tr><td class="px-4 py-2.5 font-semibold">&gt; 120 hari</td><td class="px-4 py-2.5">Soft delete (deleted_at diisi)</td></tr>
+                <tr><td class="px-4 py-2.5 font-semibold">&gt; 365 hari</td><td class="px-4 py-2.5">Hard delete (UU PDP) + ekspor final dikirim</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- ============ F-5 ============ -->
+          <h2 id="f5" class="mt-14 flex items-center gap-3 text-2xl font-extrabold text-slate-900"><span class="flex h-9 w-9 items-center justify-center rounded-xl bg-violet-600 text-base text-white">F5</span> Multi-Pos Kas</h2>
+
+          <div class="mt-5 rounded-2xl border-2 border-violet-200 bg-violet-50 p-5 text-sm text-violet-900">
+            💡 <b>Masalah:</b> Bendahara tidak memegang satu kantong uang. Ada <b>3 pos kas</b> berbeda — sistem sekarang hanya tahu "total saldo" tanpa tahu <b>di mana</b> uang berada. Padahal bendahara perlu tahu berapa tunai, berapa di rekening, berapa di Midtrans yang belum cair.
+          </div>
+
+          <h3 class="mt-7 text-lg font-extrabold text-slate-900">Tiga Pos Kas</h3>
+          <div class="mt-3 grid gap-4 sm:grid-cols-3">
+            <div class="rounded-2xl border border-slate-200 bg-white p-5 text-center shadow-sm">
+              <div class="text-3xl">💵</div>
+              <div class="mt-2 font-extrabold text-slate-900">Tunai</div>
+              <p class="mt-1 text-sm text-slate-600">Uang fisik di tangan / brankas bendahara</p>
+            </div>
+            <div class="rounded-2xl border border-slate-200 bg-white p-5 text-center shadow-sm">
+              <div class="text-3xl">🏦</div>
+              <div class="mt-2 font-extrabold text-slate-900">Rekening Bank</div>
+              <p class="mt-1 text-sm text-slate-600">Saldo rekening gereja (BSG · Bank Sulut Go)</p>
+            </div>
+            <div class="rounded-2xl border border-slate-200 bg-white p-5 text-center shadow-sm">
+              <div class="text-3xl">📱</div>
+              <div class="mt-2 font-extrabold text-slate-900">Midtrans</div>
+              <p class="mt-1 text-sm text-slate-600">Saldo pembayaran online sebelum dicairkan</p>
+            </div>
+          </div>
+          <div class="mt-3 rounded-xl border border-violet-200 bg-violet-50 p-3 text-center text-sm font-bold text-violet-800">Saldo Total Gereja = 💵 Tunai + 🏦 Rekening + 📱 Midtrans</div>
+
+          <h3 class="mt-7 text-lg font-extrabold text-slate-900">Saldo Awal Saat Daftar</h3>
+          <div class="mt-3 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <p class="text-sm text-slate-600">Saat mendaftar, gereja mengisi kondisi kas saat mulai memakai sistem — menjadi <b>titik nol akuntansi</b>.</p>
+            <div class="mt-3 space-y-1.5 text-sm">
+              <div class="flex items-center justify-between rounded-lg border border-slate-200 bg-slate-50 px-3 py-2"><span>💵 Tunai di tangan</span><span class="font-mono text-slate-400">Rp [____]</span></div>
+              <div class="flex items-center justify-between rounded-lg border border-slate-200 bg-slate-50 px-3 py-2"><span>🏦 Rekening BSG</span><span class="font-mono text-slate-400">Rp [____]</span></div>
+              <div class="flex items-center justify-between rounded-lg border border-slate-200 bg-slate-50 px-3 py-2"><span>📱 Midtrans (jika ada)</span><span class="font-mono text-slate-400">Rp [____]</span></div>
+            </div>
+          </div>
+
+          <h3 class="mt-7 text-lg font-extrabold text-slate-900">Pemasukan & Pengeluaran → Pilih Pos</h3>
+          <div class="mt-3 grid gap-4 sm:grid-cols-2">
+            <div class="rounded-2xl border border-emerald-200 bg-emerald-50 p-5">
+              <div class="text-xs font-extrabold uppercase text-emerald-700">Form Pemasukan — "Masuk ke pos"</div>
+              <div class="mt-2 space-y-1 text-sm">
+                <label class="flex items-center gap-2"><input type="radio" name="d-in" checked class="h-4 w-4" /> 💵 Tunai</label>
+                <label class="flex items-center gap-2"><input type="radio" name="d-in" class="h-4 w-4" /> 🏦 Rekening BSG</label>
+                <label class="flex items-center gap-2"><input type="radio" name="d-in" class="h-4 w-4" /> 📱 Midtrans <span class="text-xs text-slate-400">(otomatis jika online)</span></label>
+              </div>
+            </div>
+            <div class="rounded-2xl border border-rose-200 bg-rose-50 p-5">
+              <div class="text-xs font-extrabold uppercase text-rose-700">Form Pengeluaran — "Ambil dari pos"</div>
+              <div class="mt-2 space-y-1 text-sm">
+                <label class="flex items-center justify-between gap-2"><span class="flex items-center gap-2"><input type="radio" name="d-out" checked class="h-4 w-4" /> 💵 Tunai</span><span class="text-xs text-slate-500">Rp 2 jt</span></label>
+                <label class="flex items-center justify-between gap-2"><span class="flex items-center gap-2"><input type="radio" name="d-out" class="h-4 w-4" /> 🏦 Rekening BSG</span><span class="text-xs text-slate-500">Rp 15 jt</span></label>
+                <label class="flex items-center justify-between gap-2"><span class="flex items-center gap-2"><input type="radio" name="d-out" class="h-4 w-4" /> 📱 Midtrans</span><span class="text-xs text-slate-500">Rp 800 rb</span></label>
+              </div>
+            </div>
+          </div>
+
+          <h3 class="mt-7 text-lg font-extrabold text-slate-900">Transfer Antar Pos — Mengapa Terpisah?</h3>
+          <div class="mt-3 rounded-2xl border-2 border-amber-300 bg-amber-50 p-5 text-sm text-amber-900">
+            ⚠️ <b>Keputusan arsitektur terpenting di F-5.</b> Transfer antar pos <b>tidak mengubah total kas</b> — uang hanya pindah tempat. Jika dicatat sebagai pengeluaran + pemasukan biasa, akan <b>double-count</b> &amp; merusak rekap. Maka mutasi disimpan di tabel <code>mutasi_kas</code> terpisah.
+          </div>
+          <div class="mt-3 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+            <table class="w-full text-left text-sm">
+              <thead class="bg-slate-50 text-xs font-extrabold uppercase tracking-wide text-slate-500"><tr><th class="px-4 py-3">Jenis</th><th class="px-4 py-3">Saldo total gereja</th><th class="px-4 py-3">Saldo pos</th></tr></thead>
+              <tbody class="divide-y divide-slate-100">
+                <tr><td class="px-4 py-2.5 font-semibold">Pemasukan</td><td class="px-4 py-2.5 text-emerald-700 font-bold">Naik</td><td class="px-4 py-2.5">Pos tujuan naik</td></tr>
+                <tr><td class="px-4 py-2.5 font-semibold">Pengeluaran</td><td class="px-4 py-2.5 text-rose-700 font-bold">Turun</td><td class="px-4 py-2.5">Pos asal turun</td></tr>
+                <tr class="bg-violet-50/50"><td class="px-4 py-2.5 font-semibold">Mutasi (transfer)</td><td class="px-4 py-2.5 text-slate-700 font-bold">Tetap</td><td class="px-4 py-2.5">Asal turun, tujuan naik</td></tr>
+                <tr class="bg-violet-50/50"><td class="px-4 py-2.5 font-semibold">Mutasi + biaya admin</td><td class="px-4 py-2.5 text-amber-700 font-bold">Turun (biaya)</td><td class="px-4 py-2.5">Asal turun (jml+biaya), tujuan naik (jml)</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3 class="mt-7 text-lg font-extrabold text-slate-900">Skenario: Tarik Rekening → Pengeluaran Tunai</h3>
+          <div class="mt-3 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <pre class="mermaid">
+flowchart LR
+    R1[🏦 Rekening BSG<br/>Rp 15 jt]:::bank
+    T1[💵 Tunai<br/>Rp 2 jt]:::cash
+    R1 -->|"① Mutasi: Rp 5 jt<br/>(biaya admin 6.5rb)"| T2[💵 Tunai<br/>Rp 7 jt]:::cash
+    R1 -.-> R2[🏦 Rekening BSG<br/>Rp 9.993.500]:::bank
+    T2 -->|"② Pengeluaran<br/>material Rp 4 jt"| T3[💵 Tunai<br/>Rp 3 jt]:::cash
+    classDef bank fill:#e0edff,stroke:#255deb,color:#14224c;
+    classDef cash fill:#dcfce7,stroke:#16a34a,color:#14532d;
+            </pre>
+            <p class="mt-3 text-sm text-slate-600">Setiap pergerakan ter-track: <b>1 mutasi</b> + <b>1 pengeluaran</b>. Audit jelas — uang dari rekening → tunai → material renovasi. Hanya biaya admin Rp 6.500 yang benar-benar mengurangi total kas.</p>
+          </div>
+
+          <h3 class="mt-7 text-lg font-extrabold text-slate-900">Rumus Saldo per Pos</h3>
+          <div class="mt-3 rounded-2xl bg-slate-900 p-5 font-mono text-xs text-slate-100 sm:text-sm">
+            <div>Saldo pos X = saldo_awal(X)</div>
+            <div class="ml-16 text-emerald-400">+ Σ pemasukan   (pos=X, status_kas=sudah_diterima)</div>
+            <div class="ml-16 text-rose-400">− Σ pengeluaran (pos=X, status_kas=sudah_dikeluarkan)</div>
+            <div class="ml-16 text-brand-300">+ Σ mutasi_masuk  (pos_tujuan=X)</div>
+            <div class="ml-16 text-amber-300">− Σ mutasi_keluar (pos_asal=X, termasuk biaya_admin)</div>
+          </div>
+
+          <h3 class="mt-7 text-lg font-extrabold text-slate-900">Menu Baru: Arus Kas per Pos</h3>
+          <div class="mt-3 rounded-2xl border border-slate-200 bg-white p-5 font-mono text-sm shadow-sm">
+            <div class="text-slate-400">LAPORAN</div>
+            <div class="ml-3">├── Arus Kas</div>
+            <div class="ml-3 text-violet-600 font-bold">├── Arus Kas per Pos <span class="text-slate-400 font-normal">← baru</span></div>
+            <div class="ml-3">├── Rekap Mingguan</div>
+            <div class="ml-3">├── Rekap Bulanan</div>
+            <div class="ml-3">└── Belum Diterima <span class="text-slate-400">(F-4)</span></div>
+          </div>
+          <div class="mt-3 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+            <div class="border-b border-slate-100 bg-slate-50 px-4 py-2 text-xs font-extrabold uppercase text-slate-500">Riwayat pergerakan pos "Rekening BSG"</div>
+            <table class="w-full text-left text-sm">
+              <thead class="text-xs font-semibold text-slate-400"><tr><th class="px-4 py-2">Tanggal</th><th class="px-4 py-2">Keterangan</th><th class="px-4 py-2 text-right">Masuk</th><th class="px-4 py-2 text-right">Keluar</th><th class="px-4 py-2 text-right">Saldo</th></tr></thead>
+              <tbody class="divide-y divide-slate-100">
+                <tr><td class="px-4 py-2">01/06</td><td class="px-4 py-2">Saldo awal</td><td class="px-4 py-2 text-right text-emerald-700">10 jt</td><td class="px-4 py-2 text-right">—</td><td class="px-4 py-2 text-right font-semibold">10 jt</td></tr>
+                <tr><td class="px-4 py-2">03/06</td><td class="px-4 py-2">Persembahan transfer</td><td class="px-4 py-2 text-right text-emerald-700">8 jt</td><td class="px-4 py-2 text-right">—</td><td class="px-4 py-2 text-right font-semibold">18 jt</td></tr>
+                <tr class="bg-violet-50/40"><td class="px-4 py-2">05/06</td><td class="px-4 py-2">→ Tarik tunai (mutasi)</td><td class="px-4 py-2 text-right">—</td><td class="px-4 py-2 text-right text-rose-700">3 jt</td><td class="px-4 py-2 text-right font-semibold">15 jt</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3 class="mt-7 text-lg font-extrabold text-slate-900">Integrasi Midtrans (Pencairan)</h3>
+          <div class="mt-3 rounded-2xl border border-slate-200 bg-white p-5 text-sm shadow-sm text-slate-600">
+            Uang di pos Midtrans tidak permanen — Midtrans <b>mencairkan</b> ke rekening bank (T+1/T+2). Ini juga <b>mutasi</b>: <code>Midtrans → Rekening BSG</code> dengan biaya MDR. MVP: dicatat <b>manual</b> oleh bendahara saat dana masuk rekening; otomatis (via webhook settlement) menyusul.
+          </div>
+
+          <h3 class="mt-7 text-lg font-extrabold text-slate-900">Endpoint Baru</h3>
+          <div class="mt-3 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+            <table class="w-full text-left text-sm">
+              <thead class="bg-slate-50 text-xs font-extrabold uppercase tracking-wide text-slate-500"><tr><th class="px-4 py-3">Method</th><th class="px-4 py-3">Path</th></tr></thead>
+              <tbody class="divide-y divide-slate-100 font-mono text-xs">
+                <tr><td class="px-4 py-2.5"><span class="rounded bg-emerald-100 px-2 py-0.5 font-bold text-emerald-700">GET</span></td><td class="px-4 py-2.5">/gereja/{g}/pos-kas <span class="font-sans text-slate-400">— list pos + saldo</span></td></tr>
+                <tr><td class="px-4 py-2.5"><span class="rounded bg-blue-100 px-2 py-0.5 font-bold text-blue-700">POST</span></td><td class="px-4 py-2.5">/gereja/{g}/pos-kas <span class="font-sans text-slate-400">— tambah pos</span></td></tr>
+                <tr><td class="px-4 py-2.5"><span class="rounded bg-emerald-100 px-2 py-0.5 font-bold text-emerald-700">GET</span></td><td class="px-4 py-2.5">/gereja/{g}/mutasi-kas <span class="font-sans text-slate-400">— list transfer</span></td></tr>
+                <tr><td class="px-4 py-2.5"><span class="rounded bg-blue-100 px-2 py-0.5 font-bold text-blue-700">POST</span></td><td class="px-4 py-2.5">/gereja/{g}/mutasi-kas <span class="font-sans text-slate-400">— buat transfer antar pos</span></td></tr>
+                <tr><td class="px-4 py-2.5"><span class="rounded bg-emerald-100 px-2 py-0.5 font-bold text-emerald-700">GET</span></td><td class="px-4 py-2.5">/gereja/{g}/arus-kas-pos?pos_id=&amp;periode= <span class="font-sans text-slate-400">— rekap satu pos</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- ============ F-6 ============ -->
+          <h2 id="f6" class="mt-14 flex items-center gap-3 text-2xl font-extrabold text-slate-900"><span class="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-700 text-base text-white">F6</span> Reversal / Koreksi Ber-Audit</h2>
+          <div class="mt-5 rounded-2xl border-2 border-slate-300 bg-slate-50 p-5 text-sm text-slate-800">
+            🔒 <b>Prinsip:</b> Tidak ada hard-delete diam-diam untuk transaksi keuangan. Koreksi = <b>entry pembalik</b> yang tercatat di audit — bukan menghapus jejak. Syarat agar laporan bisa dipertanggungjawabkan ke jemaat &amp; majelis.
+          </div>
+          <div class="mt-3 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <pre class="mermaid">
+flowchart TD
+    A[Transaksi asli Rp 200rb<br/>ditandai dikoreksi]:::orig --> B[Entry pembalik minus Rp 200rb]:::rev
+    B --> C[Netto = 0<br/>audit catat siapa/kapan/alasan]:::net
+    C -.->|opsional| D[Transaksi pengganti<br/>nilai benar]:::new
+    classDef orig fill:#fee2e2,stroke:#dc2626,color:#7f1d1d;
+    classDef rev fill:#e2e8f0,stroke:#475569,color:#1e293b;
+    classDef net fill:#dcfce7,stroke:#16a34a,color:#14532d;
+    classDef new fill:#e0edff,stroke:#255deb,color:#14224c;
+            </pre>
+          </div>
+          <div class="mt-3 grid gap-3 sm:grid-cols-2">
+            <div class="rounded-xl border border-slate-200 bg-white p-4 text-sm shadow-sm"><b>Saldo &amp; rekap</b><div class="text-slate-600">Hitung netto (asli + pembalik). Yang dikoreksi → 0.</div></div>
+            <div class="rounded-xl border border-slate-200 bg-white p-4 text-sm shadow-sm"><b>Periode tertutup</b><div class="text-slate-600">Transaksi di periode tutup buku tidak dikoreksi langsung — koreksi masuk periode berjalan.</div></div>
+            <div class="rounded-xl border border-slate-200 bg-white p-4 text-sm shadow-sm"><b>UI</b><div class="text-slate-600">Tombol "Koreksi" untuk transaksi yang sudah jadi kas + alasan wajib + badge "Dikoreksi".</div></div>
+            <div class="rounded-xl border border-slate-200 bg-white p-4 text-sm shadow-sm"><b>Hapus biasa</b><div class="text-slate-600">Hanya untuk transaksi belum diterima / pending (belum jadi kas).</div></div>
+          </div>
+
+          <!-- Urutan eksekusi -->
+          <h2 class="mt-14 text-2xl font-extrabold text-slate-900">Urutan Eksekusi</h2>
+          <div class="mt-5 rounded-2xl border-2 border-violet-200 bg-violet-50 p-4">
+            <div class="text-xs font-extrabold uppercase text-violet-600">Paket 1 — satu migrasi, feature flag <code>multi_pos_kas</code></div>
+            <div class="mt-2 flex flex-wrap items-center gap-2 text-sm font-bold">
+              <span class="rounded-xl bg-brand-600 px-3 py-1.5 text-white">F-1 Cash Basis</span>
+              <span class="text-slate-400">+</span>
+              <span class="rounded-xl bg-violet-600 px-3 py-1.5 text-white">F-5 Multi-Pos</span>
+              <span class="text-slate-400">+</span>
+              <span class="rounded-xl bg-slate-700 px-3 py-1.5 text-white">F-6 Reversal</span>
+            </div>
+          </div>
+          <div class="mt-3 flex flex-wrap items-center gap-2 text-sm font-bold">
+            <span class="text-slate-400">lalu →</span>
+            <span class="rounded-xl bg-amber-500 px-3 py-1.5 text-white">F-4 Belum Diterima</span>
+            <span class="text-slate-400">→</span>
+            <span class="rounded-xl bg-emerald-600 px-3 py-1.5 text-white">F-2 Slug + Sulut</span>
+            <span class="text-slate-400">→</span>
+            <span class="rounded-xl bg-rose-600 px-3 py-1.5 text-white">F-3 Retention</span>
+          </div>
+          <div class="mt-4 rounded-2xl border border-violet-200 bg-violet-50 p-4 text-sm text-violet-900">
+            🔧 <b>F-1 + F-5 + F-6 satu paket migrasi</b> — ketiganya menyentuh <code>pemasukan</code>/<code>pengeluaran</code> &amp; rumus saldo. Satu migration menambah <code>status_kas</code>, <code>pos_kas_id</code>, kolom reversal + tabel <code>pos_kas</code> &amp; <code>mutasi_kas</code>. Backfill cerdas (midtrans→pos Midtrans). Semua di belakang flag <code>multi_pos_kas</code>.
+          </div>
+          <p class="mt-4 text-sm text-slate-600">F-4 = tempat pos dipilih saat konfirmasi (KP-1). F-2 independen. F-3 sebagian besar sudah berjalan — sisa: job retention &amp; email.</p>
+
+          <div id="page-footer"></div>
+        </div>
+      </main>
+    </div>
+    <script>window.PAGE = "10";</script>
+    <script src="_layout.js"></script>
+    <script type="module">
+      import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs";
+      mermaid.initialize({ startOnLoad: true, theme: "base", themeVariables: { fontFamily: "Inter, sans-serif", primaryColor: "#e0edff", primaryBorderColor: "#255deb", lineColor: "#94a3b8" } });
+    </script>
+  </body>
+</html>

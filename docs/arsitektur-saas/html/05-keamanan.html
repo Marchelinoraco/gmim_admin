@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="id" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>05 · Keamanan & RBAC — Skema GMIM</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = { theme: { extend: {
+        fontFamily: { sans: ["Inter", "ui-sans-serif", "system-ui"] },
+        colors: { brand: { 50:"#f0f6ff",100:"#e0edff",200:"#cce1ff",300:"#a3caff",400:"#75aaff",500:"#4785ff",600:"#255deb",700:"#1d48c8",800:"#1e3e9f",900:"#1e367d",950:"#14224c" } },
+      } } };
+    </script>
+    <style>.mermaid{display:flex;justify-content:center}</style>
+  </head>
+  <body class="bg-slate-50 font-sans text-slate-700 antialiased">
+    <div class="mx-auto flex max-w-[100rem] flex-col lg:flex-row">
+      <aside class="sticky top-0 hidden h-screen w-72 flex-shrink-0 border-r border-slate-200 bg-white/80 p-5 backdrop-blur lg:block">
+        <a href="index.html" class="mb-6 flex items-center gap-3">
+          <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-brand-600 to-brand-800 text-2xl font-extrabold text-white shadow-lg ring-2 ring-white">G</div>
+          <div><div class="text-sm font-extrabold leading-tight text-slate-900">Keuangan GMIM</div><div class="text-xs font-medium text-slate-500">Skema Arsitektur SaaS</div></div>
+        </a>
+        <nav id="sidebar-nav" class="space-y-1"></nav>
+      </aside>
+      <div class="sticky top-0 z-40 flex items-center justify-between border-b border-slate-200 bg-white/90 px-4 py-3 backdrop-blur lg:hidden">
+        <span class="font-extrabold text-slate-900">Arsitektur GMIM</span>
+        <select id="mobile-nav" class="rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-sm font-semibold text-slate-700"></select>
+      </div>
+
+      <main class="min-w-0 flex-1 px-5 py-10 sm:px-8 lg:px-12">
+        <div class="mx-auto max-w-4xl">
+          <div class="mb-2 text-sm font-extrabold uppercase tracking-wider text-brand-600">Bagian 05</div>
+          <h1 class="text-3xl font-extrabold text-slate-900 sm:text-4xl">Keamanan & RBAC</h1>
+          <p class="mt-3 text-lg text-slate-600">Menjamin "tidak ada gereja yang bisa melihat data gereja lain" — pertahanan berlapis, key Midtrans, & akses Super Admin ber-audit.</p>
+
+          <!-- Lapisan -->
+          <h2 class="mt-10 text-2xl font-extrabold text-slate-900">Pertahanan Berlapis</h2>
+          <div class="mt-5 space-y-2">
+            <div class="flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-3 shadow-sm"><span class="flex h-7 w-7 items-center justify-center rounded-lg bg-slate-100 text-xs font-extrabold text-slate-500">0</span><span class="text-sm"><b>Origin</b> (subdomain) — cookie/storage terpisah per gereja</span><span class="ml-auto rounded-full bg-slate-100 px-2 py-0.5 text-xs font-bold text-slate-500">masa depan</span></div>
+            <div class="flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-3 shadow-sm"><span class="flex h-7 w-7 items-center justify-center rounded-lg bg-slate-100 text-xs font-extrabold text-slate-500">1</span><span class="text-sm"><b>Transport</b> — HTTPS+HSTS, CORS allow-list <code>*.gmim-keuangan.id</code></span></div>
+            <div class="flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-3 shadow-sm"><span class="flex h-7 w-7 items-center justify-center rounded-lg bg-slate-100 text-xs font-extrabold text-slate-500">2</span><span class="text-sm"><b>ResolveTenant</b> — set gereja_id aktif</span></div>
+            <div class="flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-3 shadow-sm"><span class="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-100 text-xs font-extrabold text-emerald-700">3</span><span class="text-sm"><b>auth:sanctum</b> — user dari token (login by email global) <span class="text-emerald-600">(ada)</span></span></div>
+            <div class="flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-3 shadow-sm"><span class="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-100 text-xs font-extrabold text-emerald-700">4</span><span class="text-sm"><b>EnsureUserBelongsToGereja</b> — user.gereja_id == <code>/g/&lt;slug&gt;</code> → 403 <span class="text-emerald-600">(ada)</span></span></div>
+            <div class="flex items-center gap-3 rounded-xl border border-amber-200 bg-amber-50 p-3 shadow-sm"><span class="flex h-7 w-7 items-center justify-center rounded-lg bg-amber-200 text-xs font-extrabold text-amber-700">4b</span><span class="text-sm"><b>EnsureSubscriptionActive</b> — tolak mutasi bila langganan expired (402) <span class="text-amber-600">(baru, 08)</span></span></div>
+            <div class="flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-3 shadow-sm"><span class="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-100 text-xs font-extrabold text-emerald-700">5</span><span class="text-sm"><b>EnsureRole</b> — gate per peran <span class="text-amber-600">(sebagian)</span></span></div>
+            <div class="flex items-center gap-3 rounded-xl border-2 border-rose-300 bg-rose-50 p-3 shadow-sm"><span class="flex h-7 w-7 items-center justify-center rounded-lg bg-rose-200 text-xs font-extrabold text-rose-700">6</span><span class="text-sm"><b>Global Scope BelongsToGereja</b> — WHERE gereja_id otomatis <span class="font-bold text-rose-600">(BELUM — wajib)</span></span></div>
+            <div class="flex items-center gap-3 rounded-xl border-2 border-rose-300 bg-rose-50 p-3 shadow-sm"><span class="flex h-7 w-7 items-center justify-center rounded-lg bg-rose-200 text-xs font-extrabold text-rose-700">7</span><span class="text-sm"><b>Uji isolasi di CI</b> — A tak bisa baca/tulis B <span class="font-bold text-rose-600">(BELUM — wajib)</span></span></div>
+          </div>
+          <div class="mt-4 rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-800"><b>Blocker go-live:</b> lapis 6 & 7 belum ada. Tanpa Global Scope, satu query yang lupa filter bisa membocorkan data antar gereja.</div>
+
+          <!-- Midtrans key -->
+          <h2 class="mt-12 text-2xl font-extrabold text-slate-900">Keamanan Key Midtrans</h2>
+          <div class="mt-5 grid gap-3 sm:grid-cols-2">
+            <div class="rounded-xl border border-slate-200 bg-white p-4 text-sm shadow-sm">🔒 <b>server_key</b> terenkripsi at-rest (<code>encrypted</code> cast)</div>
+            <div class="rounded-xl border border-slate-200 bg-white p-4 text-sm shadow-sm">🙈 <b>server_key</b> tak pernah dikirim ke FE (masked)</div>
+            <div class="rounded-xl border border-slate-200 bg-white p-4 text-sm shadow-sm">✍️ <b>server_key</b> write-only dari UI (kosong = jangan ubah)</div>
+            <div class="rounded-xl border border-slate-200 bg-white p-4 text-sm shadow-sm">🔑 <b>client_key</b> boleh ke FE (Snap.js)</div>
+            <div class="rounded-xl border border-slate-200 bg-white p-4 text-sm shadow-sm">✅ Webhook verifikasi <b>signature SHA-512</b> + idempoten by order_id</div>
+            <div class="rounded-xl border border-slate-200 bg-white p-4 text-sm shadow-sm">🏦 Akun Midtrans <b>per gereja</b> → dana ke rekening gereja</div>
+          </div>
+
+          <!-- Super admin -->
+          <h2 class="mt-12 text-2xl font-extrabold text-slate-900">Akses Dukungan Super Admin</h2>
+          <div class="mt-5 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <pre class="mermaid">
+flowchart TD
+    SA[Super Admin]:::sa --> RO[Default: read-only lintas gereja]:::ok
+    SA --> IMP[Masuk sebagai gereja X]:::warn
+    IMP --> LOG[(audit_log: siapa/gereja/kapan)]:::db
+    IMP --> ELchk{butuh tulis?}:::warn
+    ELchk -->|ya| EL[Elevasi eksplisit + alasan + audit]:::warn
+    ELchk -->|tidak| RO2[Tetap read-only]:::ok
+    SA -.->|TIDAK BISA| SK[server_key plaintext / password]:::no
+    classDef sa fill:#fae8ff,stroke:#a21caf,color:#581c87;
+    classDef ok fill:#dcfce7,stroke:#16a34a,color:#14532d;
+    classDef warn fill:#fef3c7,stroke:#d97706,color:#7c2d12;
+    classDef db fill:#1e293b,stroke:#0f172a,color:#fff;
+    classDef no fill:#fee2e2,stroke:#dc2626,color:#7f1d1d;
+            </pre>
+          </div>
+
+          <!-- Checklist -->
+          <h2 class="mt-12 text-2xl font-extrabold text-slate-900">Checklist Wajib Sebelum Go-Live</h2>
+          <div class="mt-5 space-y-2">
+            <label class="flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-3 text-sm shadow-sm"><input type="checkbox" class="h-4 w-4 rounded border-slate-300" /> Global Scope <code>BelongsToGereja</code> di semua model finance + tabel baru</label>
+            <label class="flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-3 text-sm shadow-sm"><input type="checkbox" class="h-4 w-4 rounded border-slate-300" /> Uji isolasi tenant lulus di CI</label>
+            <label class="flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-3 text-sm shadow-sm"><input type="checkbox" class="h-4 w-4 rounded border-slate-300" /> Wildcard DNS + TLS / HTTPS dipaksa + HSTS</label>
+            <label class="flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-3 text-sm shadow-sm"><input type="checkbox" class="h-4 w-4 rounded border-slate-300" /> CORS allow-list ketat</label>
+            <label class="flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-3 text-sm shadow-sm"><input type="checkbox" class="h-4 w-4 rounded border-slate-300" /> server_key terenkripsi; webhook signature + idempoten</label>
+            <label class="flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-3 text-sm shadow-sm"><input type="checkbox" class="h-4 w-4 rounded border-slate-300" /> Audit log aktif (akses Super Admin + aksi sensitif)</label>
+            <label class="flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-3 text-sm shadow-sm"><input type="checkbox" class="h-4 w-4 rounded border-slate-300" /> Backup PITR + uji restore</label>
+            <label class="flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-3 text-sm shadow-sm"><input type="checkbox" class="h-4 w-4 rounded border-slate-300" /> Rate limit + captcha di login/daftar</label>
+            <label class="flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-3 text-sm shadow-sm"><input type="checkbox" class="h-4 w-4 rounded border-slate-300" /> Tidak ada secret di git history</label>
+          </div>
+
+          <div id="page-footer"></div>
+        </div>
+      </main>
+    </div>
+    <script>window.PAGE = "05";</script>
+    <script src="_layout.js"></script>
+    <script type="module">
+      import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs";
+      mermaid.initialize({ startOnLoad: true, theme: "base", themeVariables: { fontFamily: "Inter, sans-serif", primaryColor: "#e0edff", primaryBorderColor: "#255deb", lineColor: "#94a3b8" } });
+    </script>
+  </body>
+</html>

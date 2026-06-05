@@ -1,49 +1,50 @@
 <script setup>
-import { computed } from "vue"
+import { ref, computed, onMounted } from "vue"
 import { useRouter } from "vue-router"
 import { useGerejaStore } from "@/stores/gerejaStore"
-import { useBendaharaStore } from "@/stores/bendaharaStore"
-import { Church, Users, Clock, CheckCircle, TrendingUp, ArrowRight } from "lucide-vue-next"
+import { adminApi } from "@/api/admin"
+import { Church, Users, Clock, CheckCircle, TrendingUp, ArrowRight, CreditCard } from "lucide-vue-next"
 import Card from "@/components/ui/Card.vue"
 import Badge from "@/components/ui/Badge.vue"
 import Button from "@/components/ui/Button.vue"
 
-const router       = useRouter()
-const gerejaStore  = useGerejaStore()
-const bendaharaStore = useBendaharaStore()
+const router      = useRouter()
+const gerejaStore = useGerejaStore()
+
+const platformStats = ref({ totalGereja: 0, totalPengguna: 0, trial: 0, active: 0, expired: 0, pendapatanBulan: 0 })
 
 const stats = computed(() => [
   {
-    label: "Total Gereja",
-    value: gerejaStore.gerejaList.length,
-    icon:  Church,
-    color: "text-blue-600",
-    bg:    "bg-blue-50",
-    change: "+2 bulan ini",
+    label:  "Total Gereja",
+    value:  platformStats.value.totalGereja,
+    icon:   Church,
+    color:  "text-blue-600",
+    bg:     "bg-blue-50",
+    change: "terdaftar",
   },
   {
-    label: "Total Bendahara",
-    value: bendaharaStore.bendaharaList.length,
-    icon:  Users,
-    color: "text-emerald-600",
-    bg:    "bg-emerald-50",
-    change: "+1 bulan ini",
+    label:  "Total Pengguna",
+    value:  platformStats.value.totalPengguna,
+    icon:   Users,
+    color:  "text-emerald-600",
+    bg:     "bg-emerald-50",
+    change: "aktif",
   },
   {
-    label: "Domain Aktif",
-    value: gerejaStore.gerejaList.filter(g => g.statusDomain === "aktif").length,
-    icon:  CheckCircle,
-    color: "text-green-600",
-    bg:    "bg-green-50",
-    change: "domain aktif",
+    label:  "Langganan Aktif",
+    value:  platformStats.value.active,
+    icon:   CheckCircle,
+    color:  "text-green-600",
+    bg:     "bg-green-50",
+    change: `${platformStats.value.trial} trial`,
   },
   {
-    label: "Domain Pending",
-    value: gerejaStore.gerejaList.filter(g => g.statusDomain === "pending").length,
-    icon:  Clock,
-    color: "text-amber-600",
-    bg:    "bg-amber-50",
-    change: "perlu ditinjau",
+    label:  "Perlu Perhatian",
+    value:  platformStats.value.expired,
+    icon:   Clock,
+    color:  "text-amber-600",
+    bg:     "bg-amber-50",
+    change: "past_due / expired",
   },
 ])
 
@@ -64,6 +65,17 @@ const statusDomainVariant = {
   pending:  "warning",
   nonaktif: "secondary",
 }
+
+onMounted(async () => {
+  // Load stats dan gereja secara paralel
+  const [statsRes] = await Promise.allSettled([
+    adminApi.stats(),
+    gerejaStore.fetchAll(),
+  ])
+  if (statsRes.status === "fulfilled" && statsRes.value.success) {
+    platformStats.value = statsRes.value.data
+  }
+})
 </script>
 
 <template>

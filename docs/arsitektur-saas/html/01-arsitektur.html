@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="id" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>01 · Arsitektur Multi-Tenant — Skema GMIM</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = { theme: { extend: {
+        fontFamily: { sans: ["Inter", "ui-sans-serif", "system-ui"] },
+        colors: { brand: { 50:"#f0f6ff",100:"#e0edff",200:"#cce1ff",300:"#a3caff",400:"#75aaff",500:"#4785ff",600:"#255deb",700:"#1d48c8",800:"#1e3e9f",900:"#1e367d",950:"#14224c" } },
+      } } };
+    </script>
+    <style>.mermaid{display:flex;justify-content:center}</style>
+  </head>
+  <body class="bg-slate-50 font-sans text-slate-700 antialiased">
+    <div class="mx-auto flex max-w-[100rem] flex-col lg:flex-row">
+      <aside class="sticky top-0 hidden h-screen w-72 flex-shrink-0 border-r border-slate-200 bg-white/80 p-5 backdrop-blur lg:block">
+        <a href="index.html" class="mb-6 flex items-center gap-3">
+          <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-brand-600 to-brand-800 text-2xl font-extrabold text-white shadow-lg ring-2 ring-white">G</div>
+          <div><div class="text-sm font-extrabold leading-tight text-slate-900">Keuangan GMIM</div><div class="text-xs font-medium text-slate-500">Skema Arsitektur SaaS</div></div>
+        </a>
+        <nav id="sidebar-nav" class="space-y-1"></nav>
+      </aside>
+      <div class="sticky top-0 z-40 flex items-center justify-between border-b border-slate-200 bg-white/90 px-4 py-3 backdrop-blur lg:hidden">
+        <span class="font-extrabold text-slate-900">Arsitektur GMIM</span>
+        <select id="mobile-nav" class="rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-sm font-semibold text-slate-700"></select>
+      </div>
+
+      <main class="min-w-0 flex-1 px-5 py-10 sm:px-8 lg:px-12">
+        <div class="mx-auto max-w-4xl">
+          <div class="mb-2 text-sm font-extrabold uppercase tracking-wider text-brand-600">Bagian 01</div>
+          <h1 class="text-3xl font-extrabold text-slate-900 sm:text-4xl">Arsitektur Multi-Tenant</h1>
+          <p class="mt-3 text-lg text-slate-600">Satu platform melayani banyak gereja dengan data terisolasi total.</p>
+          <div class="mt-4 rounded-2xl border-2 border-emerald-300 bg-emerald-50 p-5 text-sm text-emerald-900">🟢 <b>Keputusan final (KF-2):</b> MVP memakai <b>path-based</b> <code>/g/&lt;slug&gt;</code> + <b>modular monolith</b> (identitas = modul di <code>gmim_api</code>). Bagian subdomain & central-auth di bawah = <b>opsi masa depan</b>.</div>
+
+          <!-- 3 lapis isolasi -->
+          <h2 class="mt-12 text-2xl font-extrabold text-slate-900">Tiga Lapis Isolasi Tenant</h2>
+          <p class="mt-2 text-slate-600">Keamanan tidak bergantung pada URL. URL hanya menentukan <i>tujuan</i>; penjaga sebenarnya ada di backend.</p>
+          <div class="mt-5 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <pre class="mermaid">
+flowchart LR
+    H[Request<br/>path /g/&lt;slug&gt; + Bearer Sanctum] --> M1[1· ResolveTenant<br/>tentukan gereja_id aktif dari path]:::m
+    M1 --> M2[2· auth:sanctum<br/>user dari token]:::m
+    M2 --> M3[3· EnsureUserBelongsToGereja<br/>user.gereja_id == gereja aktif?]:::m
+    M3 -->|cocok| M4[4· Global Scope<br/>WHERE gereja_id otomatis]:::g
+    M3 -->|tidak| X[403 Ditolak]:::x
+    M4 --> DB[(MySQL single-DB<br/>semua tabel ber-gereja_id)]:::db
+    classDef m fill:#e0edff,stroke:#255deb,color:#14224c;
+    classDef g fill:#dcfce7,stroke:#16a34a,color:#14532d;
+    classDef x fill:#fee2e2,stroke:#dc2626,color:#7f1d1d;
+    classDef db fill:#1e293b,stroke:#0f172a,color:#fff;
+            </pre>
+          </div>
+          <div class="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
+            <b>Gap saat ini:</b> lapis <b>Global Scope</b> & <b>uji isolasi CI</b> belum ada di <code>gmim_api</code>. Ini blocker sebelum go-live (lihat <a class="font-semibold underline" href="05-keamanan.html">Bagian 05</a>).
+          </div>
+
+          <!-- Keputusan AD-1 -->
+          <h2 class="mt-12 text-2xl font-extrabold text-slate-900">Keputusan AD-1 · Subdomain vs Path</h2>
+          <div class="mt-5 grid gap-4 md:grid-cols-2">
+            <div class="rounded-2xl border-2 border-emerald-400 bg-emerald-50/50 p-5 shadow-sm">
+              <div class="flex items-center justify-between">
+                <h3 class="font-extrabold text-emerald-800">Path-based</h3>
+                <span class="rounded-full bg-emerald-600 px-2.5 py-0.5 text-xs font-extrabold text-white">DIPILIH · MVP</span>
+              </div>
+              <code class="mt-1 block text-sm text-emerald-700">gmim-keuangan.id/g/bethesda</code>
+              <ul class="mt-3 space-y-1.5 text-sm text-slate-700">
+                <li>✅ Infra sederhana (1 domain, 1 sertifikat)</li>
+                <li>✅ Dekat dgn kode API kini (<code>/gereja/&#123;id&#125;</code>)</li>
+                <li>✅ Login same-origin, tanpa OIDC/handoff/JWT</li>
+                <li>✅ Fokus energi ke inti produk & operasional</li>
+                <li>➖ Isolasi origin lebih lemah → dijaga server (Global Scope)</li>
+              </ul>
+            </div>
+            <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+              <div class="flex items-center justify-between">
+                <h3 class="font-extrabold text-slate-800">Subdomain</h3>
+                <span class="rounded-full bg-slate-200 px-2.5 py-0.5 text-xs font-extrabold text-slate-600">MASA DEPAN</span>
+              </div>
+              <code class="mt-1 block text-sm text-slate-600">bethesda.gmim-keuangan.id</code>
+              <ul class="mt-3 space-y-1.5 text-sm text-slate-700">
+                <li>✅ Isolasi <b>per-origin</b> (cookie/storage terpisah)</li>
+                <li>✅ Branding per gereja, custom domain mudah</li>
+                <li>⚠️ Butuh wildcard DNS + TLS</li>
+                <li>⚠️ Login lintas-origin perlu redirect OIDC</li>
+                <li>🔮 Aktifkan saat tenant banyak / butuh isolasi origin</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="mt-6 rounded-2xl border border-emerald-200 bg-emerald-50 p-5">
+            <h3 class="font-extrabold text-emerald-900">Keputusan: path-based dulu (KF-2)</h3>
+            <p class="mt-2 text-sm text-emerald-800">Backend sudah path-based & login same-origin lebih sederhana. Model data <b>netral</b> terhadap pilihan URL (slug/gereja_id sudah jadi konsep tenant), jadi peralihan ke subdomain di masa depan <b>tidak membongkar model data</b> — hanya tambah <code>ResolveTenant</code> dari host + DNS/TLS/CORS.</p>
+          </div>
+
+          <!-- Request lifecycle -->
+          <h2 class="mt-12 text-2xl font-extrabold text-slate-900">Siklus Request (MVP · path-based)</h2>
+          <div class="mt-5 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <pre class="mermaid">
+sequenceDiagram
+    autonumber
+    participant B as Browser (/g/bethesda)
+    participant I as Ingress TLS gmim-keuangan.id
+    participant A as gmim_api
+    participant D as MySQL
+    B->>I: GET /g/bethesda/pemasukan + Bearer Sanctum
+    I->>A: teruskan
+    A->>A: ResolveTenant → gereja_id=bethesda (dari path)
+    A->>A: auth:sanctum → user
+    A->>A: cek user.gereja_id == bethesda ?
+    A->>D: SELECT ... (Global Scope WHERE gereja_id=bethesda)
+    D-->>A: hanya data bethesda
+    A-->>B: 200 data gereja sendiri
+            </pre>
+          </div>
+
+          <!-- Domain table -->
+          <h2 class="mt-12 text-2xl font-extrabold text-slate-900">Domain & Subdomain Final</h2>
+          <p class="mt-2 text-slate-600">Standar tunggal <b>gmim-keuangan.id</b> (spec lama <code>gmimjadi.com</code> perlu diperbarui).</p>
+          <div class="mt-5 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+            <table class="w-full text-left text-sm">
+              <thead class="bg-slate-50 text-xs font-extrabold uppercase tracking-wide text-slate-500"><tr><th class="px-4 py-3">Subdomain</th><th class="px-4 py-3">Tujuan</th></tr></thead>
+              <tbody class="divide-y divide-slate-100">
+                <tr><td class="px-4 py-3 font-mono text-brand-700">gmim-keuangan.id</td><td class="px-4 py-3">Landing page (gmim_landingpage)</td></tr>
+                <tr><td class="px-4 py-3 font-mono text-brand-700">app.</td><td class="px-4 py-3">Central Auth: login, daftar, redirect</td></tr>
+                <tr><td class="px-4 py-3 font-mono text-brand-700">demo.</td><td class="px-4 py-3">Mode Demo (client-only)</td></tr>
+                <tr><td class="px-4 py-3 font-mono text-brand-700">&lt;slug&gt;.</td><td class="px-4 py-3">Ruang kerja gereja (gmim_manage)</td></tr>
+                <tr><td class="px-4 py-3 font-mono text-brand-700">admin.</td><td class="px-4 py-3">Super Admin (gmim_admin)</td></tr>
+                <tr><td class="px-4 py-3 font-mono text-brand-700">api.</td><td class="px-4 py-3">Backend API (gmim_api)</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="mt-3 text-sm text-slate-500"><b>Slug dilindungi</b> (tak boleh dipakai gereja): app, admin, api, demo, www, mail, static, assets, status.</p>
+
+          <div id="page-footer"></div>
+        </div>
+      </main>
+    </div>
+    <script>window.PAGE = "01";</script>
+    <script src="_layout.js"></script>
+    <script type="module">
+      import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs";
+      mermaid.initialize({ startOnLoad: true, theme: "base", themeVariables: { fontFamily: "Inter, sans-serif", primaryColor: "#e0edff", primaryBorderColor: "#255deb", lineColor: "#94a3b8" } });
+    </script>
+  </body>
+</html>

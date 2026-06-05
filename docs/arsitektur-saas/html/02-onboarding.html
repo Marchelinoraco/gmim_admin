@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="id" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>02 · Autentikasi & Onboarding — Skema GMIM</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = { theme: { extend: {
+        fontFamily: { sans: ["Inter", "ui-sans-serif", "system-ui"] },
+        colors: { brand: { 50:"#f0f6ff",100:"#e0edff",200:"#cce1ff",300:"#a3caff",400:"#75aaff",500:"#4785ff",600:"#255deb",700:"#1d48c8",800:"#1e3e9f",900:"#1e367d",950:"#14224c" } },
+      } } };
+    </script>
+    <style>.mermaid{display:flex;justify-content:center}</style>
+  </head>
+  <body class="bg-slate-50 font-sans text-slate-700 antialiased">
+    <div class="mx-auto flex max-w-[100rem] flex-col lg:flex-row">
+      <aside class="sticky top-0 hidden h-screen w-72 flex-shrink-0 border-r border-slate-200 bg-white/80 p-5 backdrop-blur lg:block">
+        <a href="index.html" class="mb-6 flex items-center gap-3">
+          <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-brand-600 to-brand-800 text-2xl font-extrabold text-white shadow-lg ring-2 ring-white">G</div>
+          <div><div class="text-sm font-extrabold leading-tight text-slate-900">Keuangan GMIM</div><div class="text-xs font-medium text-slate-500">Skema Arsitektur SaaS</div></div>
+        </a>
+        <nav id="sidebar-nav" class="space-y-1"></nav>
+      </aside>
+      <div class="sticky top-0 z-40 flex items-center justify-between border-b border-slate-200 bg-white/90 px-4 py-3 backdrop-blur lg:hidden">
+        <span class="font-extrabold text-slate-900">Arsitektur GMIM</span>
+        <select id="mobile-nav" class="rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-sm font-semibold text-slate-700"></select>
+      </div>
+
+      <main class="min-w-0 flex-1 px-5 py-10 sm:px-8 lg:px-12">
+        <div class="mx-auto max-w-4xl">
+          <div class="mb-2 text-sm font-extrabold uppercase tracking-wider text-brand-600">Bagian 02</div>
+          <h1 class="text-3xl font-extrabold text-slate-900 sm:text-4xl">Autentikasi & Onboarding</h1>
+          <p class="mt-3 text-lg text-slate-600">Empat tombol di landing → tiga alur masuk, plus model peran (RBAC) dan akses dukungan Super Admin.</p>
+
+          <!-- Tombol -->
+          <div class="mt-8 flex flex-wrap gap-3">
+            <span class="rounded-xl bg-brand-600 px-4 py-2 text-sm font-extrabold text-white shadow">Masuk → Alur A</span>
+            <span class="rounded-xl bg-slate-200 px-4 py-2 text-sm font-extrabold text-slate-700">Coba Demo → Alur B</span>
+            <span class="rounded-xl bg-emerald-600 px-4 py-2 text-sm font-extrabold text-white shadow">Daftar Gratis → Alur C</span>
+            <span class="rounded-xl border border-slate-300 px-4 py-2 text-sm font-extrabold text-slate-700">Hubungi Admin → dibantu</span>
+          </div>
+
+          <!-- Alur A -->
+          <h2 class="mt-12 text-2xl font-extrabold text-slate-900">Alur A · Login tanpa memilih gereja (Sanctum, same-origin)</h2>
+          <p class="mt-2 text-slate-600">MVP (KF-2): login by <b>email unik global</b> ke modul auth di <code>gmim_api</code>; sistem menentukan gereja → redirect <code>/g/&lt;slug&gt;</code>. Tanpa duplikasi user (satu tabel ber-email unik), tanpa OIDC/JWT.</p>
+          <div class="mt-5 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <pre class="mermaid">
+sequenceDiagram
+    autonumber
+    actor U as User
+    participant FE as gmim-keuangan.id (UI login)
+    participant API as gmim_api (modul auth)
+    U->>FE: email + password
+    FE->>API: POST /auth/login
+    API->>API: verifikasi (email unik global)
+    API->>API: resolusi gereja user → slug
+    API-->>FE: { token Sanctum, slug, role }
+    FE->>FE: simpan token (localStorage)
+    FE->>API: GET /gereja/{slug}/... + Bearer
+    API->>API: EnsureUserBelongsToGereja → cocok?
+    API-->>U: Dashboard gereja (/g/<slug>)
+            </pre>
+          </div>
+          <p class="mt-3 text-sm text-slate-500">Versi SSO/OIDC (service terpisah, JWT/JWKS) = peningkatan masa depan — <a class="font-semibold text-slate-600 underline" href="07-sso.html">Bagian 07 (ditunda)</a>.</p>
+
+          <!-- Alur B -->
+          <h2 class="mt-12 text-2xl font-extrabold text-slate-900">Alur B · Mode Demo (client-only)</h2>
+          <div class="mt-5 grid gap-4 sm:grid-cols-2">
+            <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+              <h3 class="font-extrabold text-slate-900">Prinsip</h3>
+              <ul class="mt-2 space-y-1.5 text-sm text-slate-700">
+                <li>💾 Data hanya di <code>localStorage</code> (<code>demo:*</code>)</li>
+                <li>🚫 Tanpa panggilan tulis ke API</li>
+                <li>🌱 Seed contoh realistis</li>
+                <li>🧪 Banner "data tidak permanen" + tombol Reset</li>
+                <li>➡️ CTA "Daftar & simpan data ini"</li>
+              </ul>
+            </div>
+            <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+              <h3 class="font-extrabold text-slate-900">Implementasi</h3>
+              <pre class="mermaid">
+flowchart TD
+    FS[financeStore]:::s --> Q{mode?}
+    Q -->|demo| LS[localStorageAdapter]:::d
+    Q -->|live| AP[apiAdapter → gmim_api]:::a
+    classDef s fill:#e0edff,stroke:#255deb,color:#14224c;
+    classDef d fill:#f1f5f9,stroke:#94a3b8,color:#334155;
+    classDef a fill:#dcfce7,stroke:#16a34a,color:#14532d;
+              </pre>
+            </div>
+          </div>
+
+          <!-- Alur C -->
+          <h2 class="mt-12 text-2xl font-extrabold text-slate-900">Alur C · Pendaftaran Mandiri</h2>
+          <p class="mt-2 text-slate-600">Pendaftar otomatis menjadi <b>Admin Gereja</b>. Gereja + langganan trial + user + seed dalam <b>satu transaksi</b> di <code>gmim_api</code> (modular monolith).</p>
+          <div class="mt-5 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <pre class="mermaid">
+sequenceDiagram
+    autonumber
+    actor U as Calon Gereja
+    participant R as gmim-keuangan.id/daftar
+    participant API as gmim_api
+    U->>R: nama gereja, alamat, bendahara, slug, email, password
+    R->>API: POST /auth/register
+    API->>API: validasi slug unik+reserved, email unik global
+    Note over API: TRANSACTION
+    API->>API: gereja (slug, status=trial)
+    API->>API: langganan (trial, +14 hari)
+    API->>API: church_user (email, role=admin_gereja)
+    API->>API: seed kategori + aset + "Gaji & Honor"
+    Note over API: COMMIT (+ email verifikasi)
+    API-->>R: { token, slug }
+    R-->>U: redirect gmim-keuangan.id/g/<slug>/dashboard
+            </pre>
+          </div>
+
+          <!-- RBAC -->
+          <h2 class="mt-12 text-2xl font-extrabold text-slate-900">Peran & Hak Akses (RBAC)</h2>
+          <div class="mt-5 overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm">
+            <table class="w-full min-w-[640px] text-left text-sm">
+              <thead class="bg-slate-50 text-xs font-extrabold uppercase tracking-wide text-slate-500">
+                <tr><th class="px-3 py-3">Kemampuan</th><th class="px-3 py-3 text-center">Super Admin</th><th class="px-3 py-3 text-center">Admin Gereja</th><th class="px-3 py-3 text-center">Bendahara</th><th class="px-3 py-3 text-center">Pelayan</th><th class="px-3 py-3 text-center">Viewer</th></tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100">
+                <tr><td class="px-3 py-2.5 font-semibold">Kelola akun gereja</td><td class="px-3 py-2.5 text-center">semua</td><td class="px-3 py-2.5 text-center text-emerald-600">✅</td><td class="px-3 py-2.5 text-center text-slate-300">➖</td><td class="px-3 py-2.5 text-center text-rose-400">✕</td><td class="px-3 py-2.5 text-center text-rose-400">✕</td></tr>
+                <tr><td class="px-3 py-2.5 font-semibold">Pemasukan / Pengeluaran</td><td class="px-3 py-2.5 text-center">support</td><td class="px-3 py-2.5 text-center text-emerald-600">✅</td><td class="px-3 py-2.5 text-center text-emerald-600">✅</td><td class="px-3 py-2.5 text-center text-xs">manual→pending</td><td class="px-3 py-2.5 text-center text-rose-400">✕</td></tr>
+                <tr><td class="px-3 py-2.5 font-semibold">Approve / Reject</td><td class="px-3 py-2.5 text-center">support</td><td class="px-3 py-2.5 text-center text-emerald-600">✅</td><td class="px-3 py-2.5 text-center text-emerald-600">✅</td><td class="px-3 py-2.5 text-center text-rose-400">✕</td><td class="px-3 py-2.5 text-center text-rose-400">✕</td></tr>
+                <tr><td class="px-3 py-2.5 font-semibold">Aset / Gaji</td><td class="px-3 py-2.5 text-center">support</td><td class="px-3 py-2.5 text-center text-emerald-600">✅</td><td class="px-3 py-2.5 text-center text-emerald-600">✅</td><td class="px-3 py-2.5 text-center text-rose-400">✕</td><td class="px-3 py-2.5 text-center">lihat</td></tr>
+                <tr><td class="px-3 py-2.5 font-semibold">Tutup buku</td><td class="px-3 py-2.5 text-center">support</td><td class="px-3 py-2.5 text-center text-emerald-600">✅</td><td class="px-3 py-2.5 text-center text-emerald-600">✅</td><td class="px-3 py-2.5 text-center text-rose-400">✕</td><td class="px-3 py-2.5 text-center text-rose-400">✕</td></tr>
+                <tr><td class="px-3 py-2.5 font-semibold">Konfig Midtrans</td><td class="px-3 py-2.5 text-center">status</td><td class="px-3 py-2.5 text-center text-emerald-600">✅</td><td class="px-3 py-2.5 text-center text-emerald-600">✅</td><td class="px-3 py-2.5 text-center text-rose-400">✕</td><td class="px-3 py-2.5 text-center text-rose-400">✕</td></tr>
+                <tr><td class="px-3 py-2.5 font-semibold">Lihat laporan/dashboard</td><td class="px-3 py-2.5 text-center text-emerald-600">✅</td><td class="px-3 py-2.5 text-center text-emerald-600">✅</td><td class="px-3 py-2.5 text-center text-emerald-600">✅</td><td class="px-3 py-2.5 text-center">sebagian</td><td class="px-3 py-2.5 text-center text-emerald-600">✅</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="mt-3 text-sm text-slate-500">Saat ini hanya ada peran <b>Bendahara</b> & <b>Pelayan Khusus</b> — tambahkan <code>admin_gereja</code> & <code>viewer</code>.</p>
+
+          <!-- Super admin support -->
+          <h2 class="mt-12 text-2xl font-extrabold text-slate-900">Akses Dukungan Super Admin</h2>
+          <div class="mt-5 grid gap-3 sm:grid-cols-2">
+            <div class="rounded-xl border border-fuchsia-200 bg-fuchsia-50 p-4 text-sm text-fuchsia-900"><b>Default read-only</b> lintas gereja (<code>support.read</code>).</div>
+            <div class="rounded-xl border border-fuchsia-200 bg-fuchsia-50 p-4 text-sm text-fuchsia-900"><b>"Masuk sebagai"</b> (impersonasi) tercatat di <code>audit_log</code>.</div>
+            <div class="rounded-xl border border-fuchsia-200 bg-fuchsia-50 p-4 text-sm text-fuchsia-900">Bypass Global Scope <b>hanya</b> lewat jalur khusus ber-audit.</div>
+            <div class="rounded-xl border border-fuchsia-200 bg-fuchsia-50 p-4 text-sm text-fuchsia-900">Tak bisa lihat <b>server_key</b> plaintext / password.</div>
+          </div>
+
+          <div id="page-footer"></div>
+        </div>
+      </main>
+    </div>
+    <script>window.PAGE = "02";</script>
+    <script src="_layout.js"></script>
+    <script type="module">
+      import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs";
+      mermaid.initialize({ startOnLoad: true, theme: "base", themeVariables: { fontFamily: "Inter, sans-serif", primaryColor: "#e0edff", primaryBorderColor: "#255deb", lineColor: "#94a3b8" } });
+    </script>
+  </body>
+</html>

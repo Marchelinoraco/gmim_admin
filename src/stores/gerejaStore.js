@@ -1,210 +1,152 @@
-// src/stores/gerejaStore.js
 import { defineStore } from "pinia"
 import { ref, computed } from "vue"
-import { dummyGereja } from "@/data/dummyGereja"
-import { validasiSubdomain, isSubdomainUnik } from "@/utils/validasiSubdomain"
+import { adminApi } from "@/api/admin"
+import { validasiSubdomain } from "@/utils/validasiSubdomain"
 
 export const useGerejaStore = defineStore("gereja", () => {
   // === STATE ===
-  const gerejaList = ref([...dummyGereja])
+  const gerejaList = ref([])
   const notifikasi = ref(null) // { type: "success"|"error", message: string }
+  const isLoading = ref(false)
 
   // === GETTERS ===
-  const gerejaAktifDanPending = computed(() => gerejaList.value.filter((g) => g.statusDomain !== "nonaktif"))
+  const gerejaAktifDanPending = computed(() =>
+    gerejaList.value.filter((g) => g.statusDomain !== "nonaktif")
+  )
+
+  // === FETCH ===
+
+  async function fetchAll() {
+    isLoading.value = true
+    try {
+      const data = await adminApi.getAllGereja()
+      gerejaList.value = (data.data || []).map(normalizeGereja)
+    } catch {
+      notifikasi.value = { type: "error", message: "Gagal memuat daftar gereja." }
+    } finally {
+      isLoading.value = false
+    }
+  }
+
+  async function fetchById(id) {
+    try {
+      const data = await adminApi.getGereja(id)
+      return normalizeGereja(data.data || data)
+    } catch {
+      return null
+    }
+  }
 
   // === HELPERS ===
-  function generateId() {
-    const chars = "abcdef0123456789"
-    let result = ""
-    for (let i = 0; i < 6; i++) {
-      result += chars.charAt(Math.floor(Math.random() * chars.length))
+
+  // Normalise field dari API (snake_case → camelCase sesuai model dummy lama)
+  function normalizeGereja(g) {
+    return {
+      id:               g.id,
+      nama:             g.nama || "",
+      alamat:           g.alamat || "",
+      namaPendeta:      g.nama_pendeta || g.namaPendeta || "",
+      telepon:          g.telepon || "",
+      subdomain:        g.subdomain || g.slug || "",
+      slug:             g.slug || g.subdomain || "",
+      statusLangganan:  g.status_langganan || g.statusLangganan || "trial",
+      paketLangganan:   g.paket_langganan  || g.paketLangganan  || "Basic",
+      statusDomain:     g.status_domain    || g.statusDomain    || "pending",
+      bergabungPada:    g.bergabung_pada   || g.bergabungPada   || "",
+      langgananBerakhir: g.langganan_berakhir || g.langgananBerakhir || "",
+      createdAt:        g.created_at || g.createdAt || "",
+      updatedAt:        g.updated_at || g.updatedAt || "",
     }
-    return `c-${result}`
   }
 
-  function formatTimestamp(date = new Date()) {
-    if (!(date instanceof Date)) {
-      date = new Date(date)
-    }
-    if (isNaN(date.getTime())) return ""
-    const day = String(date.getDate()).padStart(2, "0")
-    const month = String(date.getMonth() + 1).padStart(2, "0")
-    const year = date.getFullYear()
-    const h = String(date.getHours()).padStart(2, "0")
-    const m = String(date.getMinutes()).padStart(2, "0")
-    const s = String(date.getSeconds()).padStart(2, "0")
-    return `${day}/${month}/${year} ${h}:${m}:${s}`
-  }
+  // === GETTERS ===
 
-  // === ACTIONS ===
-
-  /**
-   * Mendapatkan gereja berdasarkan ID
-   * @param {string} id
-   * @returns {object|undefined}
-   */
   function getById(id) {
     return gerejaList.value.find((g) => g.id === id)
   }
 
-  /**
-   * Menambah gereja baru. statusDomain selalu "pending".
-   * @param {object} input - Data gereja (nama, alamat, namaPendeta, telepon, subdomain, paketLangganan, dll)
-   * @returns {object|false} Gereja yang dibuat atau false jika validasi gagal
-   */
-  function tambahGereja(input) {
+  // === ACTIONS ===
+
+  async function tambahGereja(input) {
     const validasi = validasiSubdomain(input.subdomain)
     if (!validasi.valid) {
       notifikasi.value = { type: "error", message: validasi.pesan }
       return false
     }
 
-    if (!isSubdomainUnik(input.subdomain, gerejaList.value)) {
-      notifikasi.value = { type: "error", message: "Subdomain sudah digunakan" }
-      return false
-    }
-
-    const now = formatTimestamp()
-    const gerejaBaru = {
-      id: generateId(),
-      nama: input.nama || "",
-      alamat: input.alamat || "",
-      namaPendeta: input.namaPendeta || "",
-      telepon: input.telepon || "",
-      subdomain: input.subdomain,
-      statusLangganan: input.statusLangganan || "trial",
-      paketLangganan: input.paketLangganan || "Basic",
-      statusDomain: "pending",
-      bergabungPada: input.bergabungPada || new Date().toISOString().split("T")[0],
-      langgananBerakhir: input.langgananBerakhir || "",
-      createdAt: now,
-      updatedAt: now
-    }
-
-    gerejaList.value.push(gerejaBaru)
-    notifikasi.value = { type: "success", message: "Gereja berhasil ditambahkan" }
-    return gerejaBaru
+    // Gereja baru didaftarkan via self-service /register (manage app)
+    // Admin platform mengelola via override langganan, bukan buat gereja baru langsung
+    notifikasi.value = { type: "error", message: "Gunakan fitur Daftar Gratis di halaman utama untuk mendaftarkan gereja baru." }
+    return false
   }
 
-  /**
-   * Mengupdate data gereja berdasarkan ID
-   * @param {string} id
-   * @param {object} patch - Field yang akan diupdate
-   * @returns {object|false} Gereja yang diupdate atau false jika tidak ditemukan
-   */
-  function updateGereja(id, patch) {
+  async function updateGereja(id, patch) {
     const index = gerejaList.value.findIndex((g) => g.id === id)
     if (index === -1) {
       notifikasi.value = { type: "error", message: "Gereja tidak ditemukan" }
       return false
     }
 
-    // Jika subdomain diubah, validasi
-    if (patch.subdomain && patch.subdomain !== gerejaList.value[index].subdomain) {
-      const validasi = validasiSubdomain(patch.subdomain)
-      if (!validasi.valid) {
-        notifikasi.value = { type: "error", message: validasi.pesan }
-        return false
-      }
-
-      if (!isSubdomainUnik(patch.subdomain, gerejaList.value, id)) {
-        notifikasi.value = { type: "error", message: "Subdomain sudah digunakan" }
-        return false
-      }
-
-      // Subdomain berubah → statusDomain kembali ke "pending"
-      patch.statusDomain = "pending"
+    try {
+      const data = await adminApi.updateGereja(id, {
+        nama:         patch.nama,
+        alamat:       patch.alamat,
+        nama_pendeta: patch.namaPendeta,
+        telepon:      patch.telepon,
+        email:        patch.email,
+      })
+      const updated = normalizeGereja(data.data || data)
+      gerejaList.value[index] = updated
+      notifikasi.value = { type: "success", message: "Gereja berhasil diperbarui" }
+      return updated
+    } catch (err) {
+      const msg = err.data?.message || "Gagal memperbarui gereja."
+      notifikasi.value = { type: "error", message: msg }
+      return false
     }
-
-    const now = formatTimestamp()
-    gerejaList.value[index] = {
-      ...gerejaList.value[index],
-      ...patch,
-      updatedAt: now
-    }
-
-    notifikasi.value = { type: "success", message: "Gereja berhasil diperbarui" }
-    return gerejaList.value[index]
   }
 
-  /**
-   * Menghapus gereja berdasarkan ID
-   * @param {string} id
-   * @returns {boolean}
-   */
-  function hapusGereja(id) {
+  async function hapusGereja(id) {
     const index = gerejaList.value.findIndex((g) => g.id === id)
     if (index === -1) {
       notifikasi.value = { type: "error", message: "Gereja tidak ditemukan" }
       return false
     }
 
-    gerejaList.value.splice(index, 1)
-    notifikasi.value = { type: "success", message: "Gereja berhasil dihapus" }
-    return true
+    // Penghapusan gereja via admin harus melalui lifecycle resmi (suspend → export → delete)
+    notifikasi.value = { type: "error", message: "Penghapusan gereja harus melalui proses offboarding. Hubungi tim teknis." }
+    return false
+    }
   }
 
-  /**
-   * Cek apakah subdomain tersedia (unik)
-   * @param {string} subdomain
-   * @param {string|null} excludeId - ID gereja yang dikecualikan (untuk edit)
-   * @returns {boolean}
-   */
   function isSubdomainTersedia(subdomain, excludeId = null) {
-    return isSubdomainUnik(subdomain, gerejaList.value, excludeId)
+    return !gerejaList.value.some(
+      (g) => g.subdomain === subdomain && g.id !== excludeId
+    )
   }
 
-  /**
-   * Mengaktifkan domain gereja (set statusDomain ke "aktif")
-   * @param {string} id
-   * @returns {boolean}
-   */
+  // Status domain masih dikelola lokal sampai endpoint admin tersedia
   function aktifkanDomain(id) {
-    const gereja = getById(id)
-    if (!gereja) {
-      notifikasi.value = { type: "error", message: "Gereja tidak ditemukan" }
-      return false
-    }
-
     const index = gerejaList.value.findIndex((g) => g.id === id)
+    if (index === -1) { notifikasi.value = { type: "error", message: "Gereja tidak ditemukan" }; return false }
     gerejaList.value[index].statusDomain = "aktif"
-    gerejaList.value[index].updatedAt = formatTimestamp()
     notifikasi.value = { type: "success", message: "Domain berhasil diaktifkan" }
     return true
   }
 
-  /**
-   * Menonaktifkan domain gereja (set statusDomain ke "nonaktif")
-   * @param {string} id
-   * @returns {boolean}
-   */
   function nonaktifkanDomain(id) {
-    const gereja = getById(id)
-    if (!gereja) {
-      notifikasi.value = { type: "error", message: "Gereja tidak ditemukan" }
-      return false
-    }
-
     const index = gerejaList.value.findIndex((g) => g.id === id)
+    if (index === -1) { notifikasi.value = { type: "error", message: "Gereja tidak ditemukan" }; return false }
     gerejaList.value[index].statusDomain = "nonaktif"
-    gerejaList.value[index].updatedAt = formatTimestamp()
     notifikasi.value = { type: "success", message: "Domain berhasil dinonaktifkan" }
     return true
   }
 
   return {
-    // State
-    gerejaList,
-    notifikasi,
-    // Getters
+    gerejaList, notifikasi, isLoading,
     gerejaAktifDanPending,
-    // Actions
-    getById,
-    tambahGereja,
-    updateGereja,
-    hapusGereja,
-    isSubdomainTersedia,
-    aktifkanDomain,
-    nonaktifkanDomain
+    fetchAll, fetchById, getById,
+    tambahGereja, updateGereja, hapusGereja,
+    isSubdomainTersedia, aktifkanDomain, nonaktifkanDomain,
   }
 })

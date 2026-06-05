@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="id" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>06 · Roadmap — Skema GMIM</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = { theme: { extend: {
+        fontFamily: { sans: ["Inter", "ui-sans-serif", "system-ui"] },
+        colors: { brand: { 50:"#f0f6ff",100:"#e0edff",200:"#cce1ff",300:"#a3caff",400:"#75aaff",500:"#4785ff",600:"#255deb",700:"#1d48c8",800:"#1e3e9f",900:"#1e367d",950:"#14224c" } },
+      } } };
+    </script>
+    <style>.mermaid{display:flex;justify-content:center}</style>
+  </head>
+  <body class="bg-slate-50 font-sans text-slate-700 antialiased">
+    <div class="mx-auto flex max-w-[100rem] flex-col lg:flex-row">
+      <aside class="sticky top-0 hidden h-screen w-72 flex-shrink-0 border-r border-slate-200 bg-white/80 p-5 backdrop-blur lg:block">
+        <a href="index.html" class="mb-6 flex items-center gap-3">
+          <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-brand-600 to-brand-800 text-2xl font-extrabold text-white shadow-lg ring-2 ring-white">G</div>
+          <div><div class="text-sm font-extrabold leading-tight text-slate-900">Keuangan GMIM</div><div class="text-xs font-medium text-slate-500">Skema Arsitektur SaaS</div></div>
+        </a>
+        <nav id="sidebar-nav" class="space-y-1"></nav>
+      </aside>
+      <div class="sticky top-0 z-40 flex items-center justify-between border-b border-slate-200 bg-white/90 px-4 py-3 backdrop-blur lg:hidden">
+        <span class="font-extrabold text-slate-900">Arsitektur GMIM</span>
+        <select id="mobile-nav" class="rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-sm font-semibold text-slate-700"></select>
+      </div>
+
+      <main class="min-w-0 flex-1 px-5 py-10 sm:px-8 lg:px-12">
+        <div class="mx-auto max-w-4xl">
+          <div class="mb-2 text-sm font-extrabold uppercase tracking-wider text-brand-600">Bagian 06</div>
+          <h1 class="text-3xl font-extrabold text-slate-900 sm:text-4xl">Roadmap Implementasi</h1>
+          <p class="mt-3 text-lg text-slate-600">Urutan final (KF-1…KF-5): stabilkan FE↔API → inti buku kas → SaaS (identitas, langganan, operasional). Fase 0 adalah blocker.</p>
+
+          <!-- timeline -->
+          <div class="mt-8 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <pre class="mermaid">
+flowchart LR
+    F0[Fase 0 ⛔<br/>Stabilisasi:<br/>FE↔API + isolasi]:::block --> F1[1· Inti buku kas<br/>dashboard + arus kas]:::p
+    F1 --> F2[2· Aset & Gaji]:::p
+    F2 --> F3[3· Identitas modul<br/>+ path + daftar + demo]:::p
+    F3 --> F4[4· Mesin Langganan]:::bill
+    F4 --> F5[5· Operasional<br/>+ Go-Live]:::go
+    F5 --> F6[6· Midtrans + Super Admin]:::p
+    F6 -.-> F7[7· 🔮 Subdomain + SSO<br/>MASA DEPAN]:::future
+    classDef block fill:#fee2e2,stroke:#dc2626,color:#7f1d1d;
+    classDef p fill:#e0edff,stroke:#255deb,color:#14224c;
+    classDef bill fill:#fef3c7,stroke:#d97706,color:#7c2d12;
+    classDef go fill:#dcfce7,stroke:#16a34a,color:#14532d;
+    classDef future fill:#f1f5f9,stroke:#c4b5fd,color:#7c3aed,stroke-dasharray: 5 5;
+            </pre>
+          </div>
+
+          <!-- table -->
+          <h2 class="mt-12 text-2xl font-extrabold text-slate-900">Fase & Definisi Selesai</h2>
+          <div class="mt-5 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+            <table class="w-full text-left text-sm">
+              <thead class="bg-slate-50 text-xs font-extrabold uppercase tracking-wide text-slate-500"><tr><th class="px-4 py-3">Fase</th><th class="px-4 py-3">Fokus</th><th class="px-4 py-3">Selesai bila…</th></tr></thead>
+              <tbody class="divide-y divide-slate-100">
+                <tr class="bg-rose-50/50"><td class="px-4 py-3 font-extrabold text-rose-600">0 ⛔</td><td class="px-4 py-3">Stabilisasi: Global Scope + uji isolasi + <b>sambungkan SEMUA FE↔API</b> (KF-5)</td><td class="px-4 py-3">uji isolasi hijau; tak ada dummy; test hijau di CI</td></tr>
+                <tr><td class="px-4 py-3 font-bold text-brand-600">1</td><td class="px-4 py-3">Inti <b>buku kas</b>: Dashboard grafik + Arus Kas + Tutup Buku (KF-1)</td><td class="px-4 py-3">bar biru/merah + kas; arus kas/minggu/bulan/kategori + kunci periode</td></tr>
+                <tr><td class="px-4 py-3 font-bold text-brand-600">2</td><td class="px-4 py-3">Aset & Gaji/Honor</td><td class="px-4 py-3">CRUD aset + total nilai; gaji → otomatis pengeluaran</td></tr>
+                <tr><td class="px-4 py-3 font-bold text-brand-600">3</td><td class="px-4 py-3">Identitas modul (email global) + path <code>/g/&lt;slug&gt;</code> + daftar + demo (KF-2)</td><td class="px-4 py-3">login tanpa pilih gereja; daftar mandiri (Admin Gereja); demo jalan</td></tr>
+                <tr class="bg-amber-50/50"><td class="px-4 py-3 font-bold text-amber-600">4</td><td class="px-4 py-3">Mesin Langganan / Billing (KF-3)</td><td class="px-4 py-3">trial otomatis; expired dibatasi; checkout→webhook perpanjang</td></tr>
+                <tr class="bg-emerald-50/50"><td class="px-4 py-3 font-extrabold text-emerald-600">5 ✅</td><td class="px-4 py-3">Kesiapan operasional & Go-Live (KF-4)</td><td class="px-4 py-3">checklist operasional terpenuhi (backup+restore, observability, email)</td></tr>
+                <tr><td class="px-4 py-3 font-bold text-brand-600">6</td><td class="px-4 py-3">Midtrans persembahan + Super Admin API + dukungan ber-audit</td><td class="px-4 py-3">bendahara isi key; Super Admin kelola gereja nyata; audit aktif</td></tr>
+                <tr class="bg-slate-50 text-slate-400"><td class="px-4 py-3 font-bold">7 🔮</td><td class="px-4 py-3">(MASA DEPAN) Subdomain + ekstraksi SSO/OIDC</td><td class="px-4 py-3">hanya saat skala menuntut</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- final decisions -->
+          <h2 class="mt-12 text-2xl font-extrabold text-slate-900">Keputusan Sudah Final ✅</h2>
+          <div class="mt-5 grid gap-3 sm:grid-cols-2">
+            <div class="rounded-xl border-l-4 border-emerald-500 bg-white p-4 shadow-sm"><b class="text-slate-900">KF-1</b> Buku kas (bukan double-entry)</div>
+            <div class="rounded-xl border-l-4 border-emerald-500 bg-white p-4 shadow-sm"><b class="text-slate-900">KF-2</b> Path-based + modular monolith (SSO/subdomain ditunda)</div>
+            <div class="rounded-xl border-l-4 border-emerald-500 bg-white p-4 shadow-sm"><b class="text-slate-900">KF-3</b> Mesin langganan dibangun (Fase 4)</div>
+            <div class="rounded-xl border-l-4 border-emerald-500 bg-white p-4 shadow-sm"><b class="text-slate-900">KF-4</b> Operasional = syarat go-live (Fase 5)</div>
+            <div class="rounded-xl border-l-4 border-emerald-500 bg-white p-4 shadow-sm sm:col-span-2"><b class="text-slate-900">KF-5</b> Sambungkan semua FE↔API dulu (Fase 0)</div>
+          </div>
+
+          <h2 class="mt-10 text-2xl font-extrabold text-slate-900">Keputusan Kecil saat Eksekusi</h2>
+          <div class="mt-5 space-y-3">
+            <div class="rounded-xl border-l-4 border-slate-300 bg-white p-4 shadow-sm"><b class="text-slate-900">Domain final</b> <code>gmim-keuangan.id</code> (update spec admin yang masih <code>gmimjadi.com</code>).</div>
+            <div class="rounded-xl border-l-4 border-slate-300 bg-white p-4 shadow-sm"><b class="text-slate-900">Penyusutan aset</b> — dicatat saja (MVP) vs hitung otomatis.</div>
+            <div class="rounded-xl border-l-4 border-slate-300 bg-white p-4 shadow-sm"><b class="text-slate-900">Approval gaji</b> — perlu approval atau langsung dibayar.</div>
+            <div class="rounded-xl border-l-4 border-slate-300 bg-white p-4 shadow-sm"><b class="text-slate-900">Verifikasi email</b> & <b>lama trial/grace</b> + harga paket.</div>
+          </div>
+
+          <div class="mt-8 rounded-2xl bg-gradient-to-br from-brand-700 to-brand-900 p-6 text-white">
+            <p class="text-sm text-brand-100">Keputusan besar sudah final. Eksekusi dimulai dari <b class="text-white">Fase 0</b> (stabilkan FE↔API + isolasi).</p>
+          </div>
+
+          <div id="page-footer"></div>
+        </div>
+      </main>
+    </div>
+    <script>window.PAGE = "06";</script>
+    <script src="_layout.js"></script>
+    <script type="module">
+      import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs";
+      mermaid.initialize({ startOnLoad: true, theme: "base", themeVariables: { fontFamily: "Inter, sans-serif", primaryColor: "#e0edff", primaryBorderColor: "#255deb", lineColor: "#94a3b8" } });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="id" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Skema Arsitektur SaaS Keuangan GMIM</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: { extend: {
+          fontFamily: { sans: ["Inter", "ui-sans-serif", "system-ui"] },
+          colors: { brand: { 50:"#f0f6ff",100:"#e0edff",200:"#cce1ff",300:"#a3caff",400:"#75aaff",500:"#4785ff",600:"#255deb",700:"#1d48c8",800:"#1e3e9f",900:"#1e367d",950:"#14224c" } },
+        } },
+      };
+    </script>
+    <style>
+      .mermaid { display:flex; justify-content:center; }
+      .prose-tight h2 { scroll-margin-top: 5rem; }
+    </style>
+  </head>
+  <body class="bg-slate-50 font-sans text-slate-700 antialiased">
+    <div class="mx-auto flex max-w-[100rem] flex-col lg:flex-row">
+      <!-- Sidebar -->
+      <aside class="sticky top-0 hidden h-screen w-72 flex-shrink-0 border-r border-slate-200 bg-white/80 p-5 backdrop-blur lg:block">
+        <a href="index.html" class="mb-6 flex items-center gap-3">
+          <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-brand-600 to-brand-800 text-2xl font-extrabold text-white shadow-lg ring-2 ring-white">G</div>
+          <div><div class="text-sm font-extrabold leading-tight text-slate-900">Keuangan GMIM</div><div class="text-xs font-medium text-slate-500">Skema Arsitektur SaaS</div></div>
+        </a>
+        <nav id="sidebar-nav" class="space-y-1"></nav>
+        <div class="mt-6 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs font-medium text-amber-800">⚠️ Dokumen rancangan — belum dieksekusi jadi kode.</div>
+      </aside>
+
+      <!-- Mobile nav -->
+      <div class="sticky top-0 z-40 flex items-center justify-between border-b border-slate-200 bg-white/90 px-4 py-3 backdrop-blur lg:hidden">
+        <span class="font-extrabold text-slate-900">Arsitektur GMIM</span>
+        <select id="mobile-nav" class="rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-sm font-semibold text-slate-700"></select>
+      </div>
+
+      <!-- Main -->
+      <main class="min-w-0 flex-1 px-5 py-10 sm:px-8 lg:px-12">
+        <div class="mx-auto max-w-4xl prose-tight">
+          <!-- Hero -->
+          <div class="mb-10 rounded-3xl bg-gradient-to-br from-brand-700 via-brand-800 to-brand-950 p-8 text-white shadow-xl sm:p-12">
+            <span class="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-extrabold uppercase tracking-wider">Cetak Biru · SaaS Multi-Tenant</span>
+            <h1 class="mt-5 text-3xl font-extrabold leading-tight sm:text-4xl">Buku Kas Digital Multi-Gereja GMIM</h1>
+            <p class="mt-4 max-w-2xl text-brand-100"><b class="text-white">Buku kas</b> yang sederhana & transparan untuk bendahara gereja — satu platform, banyak gereja, data terisolasi total. Login satu pintu, tiap gereja diarahkan ke ruang kerjanya. <span class="text-brand-200">(Bukan software akuntansi double-entry.)</span></p>
+            <div class="mt-6 flex flex-wrap gap-3 text-sm font-semibold">
+              <span class="rounded-lg bg-white/10 px-3 py-1.5">Vue 3 + Pinia</span>
+              <span class="rounded-lg bg-white/10 px-3 py-1.5">Laravel 13 + Sanctum</span>
+              <span class="rounded-lg bg-white/10 px-3 py-1.5">Path-based · modular monolith</span>
+              <span class="rounded-lg bg-white/10 px-3 py-1.5">MySQL single-DB</span>
+              <span class="rounded-lg bg-white/10 px-3 py-1.5">Langganan + Midtrans</span>
+            </div>
+          </div>
+
+          <!-- Keputusan final -->
+          <div class="mb-10 rounded-2xl border-2 border-emerald-300 bg-emerald-50 p-6">
+            <div class="flex items-center gap-2"><span class="text-lg">✅</span><h2 class="text-xl font-extrabold text-emerald-900">Keputusan Final (2026-06-04)</h2></div>
+            <div class="mt-4 grid gap-3 sm:grid-cols-2">
+              <div class="rounded-xl bg-white p-3 text-sm shadow-sm"><b class="text-emerald-700">KF-1 · Buku kas</b><div class="text-slate-600">Single-entry, bukan double-entry. Tidak menjanjikan "seperti Accurate".</div></div>
+              <div class="rounded-xl bg-white p-3 text-sm shadow-sm"><b class="text-emerald-700">KF-2 · Modular monolith</b><div class="text-slate-600">Path-based <code>/g/&lt;slug&gt;</code>; SSO-service & subdomain <b>ditunda</b>.</div></div>
+              <div class="rounded-xl bg-white p-3 text-sm shadow-sm"><b class="text-emerald-700">KF-3 · Mesin langganan</b><div class="text-slate-600">trial/active/past_due/expired + penegak expiry + billing.</div></div>
+              <div class="rounded-xl bg-white p-3 text-sm shadow-sm"><b class="text-emerald-700">KF-4 · Kesiapan operasional</b><div class="text-slate-600">Backup+restore drill, observability, queue, email, lifecycle.</div></div>
+              <div class="rounded-xl bg-white p-3 text-sm shadow-sm sm:col-span-2"><b class="text-emerald-700">KF-5 · Sambungkan semua FE↔API dulu</b><div class="text-slate-600">Hentikan data dummy di gmim_manage & gmim_admin; test hijau; CI isolasi. Ini Fase 0.</div></div>
+            </div>
+          </div>
+
+          <!-- Konteks sistem -->
+          <h2 class="mb-2 text-2xl font-extrabold text-slate-900">Konteks Sistem</h2>
+          <p class="mb-5 text-slate-600">Lima permukaan aplikasi dan bagaimana pengguna mengalir di antaranya.</p>
+          <div class="mb-10 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <pre class="mermaid">
+flowchart TD
+    V([Pengunjung / Calon Gereja]):::user --> LP[Landing<br/>gmim-keuangan.id]:::lp
+    LP -->|Masuk / Daftar by email| API[(gmim_api · backend<br/>modul auth Sanctum + langganan + Midtrans)]:::api
+    LP -->|Coba Demo| DEMO[Demo client-only<br/>localStorage saja]:::demo
+    API -->|token + redirect| APP[Ruang Kerja Gereja<br/>gmim-keuangan.id/g/&lt;slug&gt;<br/>gmim_manage]:::app
+    APP -->|Bearer Sanctum| API
+    SAD[Super Admin<br/>admin.gmim-keuangan.id<br/>gmim_admin]:::sa --> API
+    MTG{{Midtrans gereja<br/>persembahan}}:::mt -->|webhook| API
+    MTP{{Midtrans platform<br/>langganan}}:::mt -->|webhook| API
+    SSO[/gmim_sso · SSO/OIDC<br/>DITUNDA — masa depan/]:::sso -.->|ekstraksi nanti| API
+    classDef user fill:#fef9c3,stroke:#ca8a04,color:#713f12;
+    classDef lp fill:#e0edff,stroke:#255deb,color:#14224c;
+    classDef demo fill:#f1f5f9,stroke:#94a3b8,color:#334155;
+    classDef app fill:#dcfce7,stroke:#16a34a,color:#14532d;
+    classDef api fill:#1e293b,stroke:#0f172a,color:#fff;
+    classDef sa fill:#fae8ff,stroke:#a21caf,color:#581c87;
+    classDef mt fill:#ffe4e6,stroke:#e11d48,color:#881337;
+    classDef sso fill:#f1f5f9,stroke:#c4b5fd,color:#7c3aed,stroke-dasharray: 5 5;
+            </pre>
+          </div>
+
+          <!-- Kartu navigasi -->
+          <h2 class="mb-2 text-2xl font-extrabold text-slate-900">Isi Dokumen</h2>
+          <p class="mb-5 text-slate-600">Versi markdown lengkap ada di folder induk <code class="rounded bg-slate-100 px-1.5 py-0.5 text-sm">docs/arsitektur-saas/</code>.</p>
+          <div class="mb-12 grid gap-4 sm:grid-cols-2">
+            <a href="01-arsitektur.html" class="group rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-brand-300 hover:shadow-md">
+              <div class="text-xs font-extrabold text-brand-600">01</div>
+              <div class="mt-1 font-extrabold text-slate-900">Arsitektur Multi-Tenant</div>
+              <p class="mt-1 text-sm text-slate-600">Subdomain vs path (rekomendasi), isolasi 3 lapis, DNS/TLS, central auth.</p>
+            </a>
+            <a href="02-onboarding.html" class="group rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-brand-300 hover:shadow-md">
+              <div class="text-xs font-extrabold text-brand-600">02</div>
+              <div class="mt-1 font-extrabold text-slate-900">Autentikasi & Onboarding</div>
+              <p class="mt-1 text-sm text-slate-600">Login tanpa pilih gereja, demo, pendaftaran mandiri, peran (RBAC).</p>
+            </a>
+            <a href="03-model-data.html" class="group rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-brand-300 hover:shadow-md">
+              <div class="text-xs font-extrabold text-brand-600">03</div>
+              <div class="mt-1 font-extrabold text-slate-900">Model Data (ERD)</div>
+              <p class="mt-1 text-sm text-slate-600">Skema kini + tabel baru: aset, gaji, tutup buku, audit. Diagram ERD.</p>
+            </a>
+            <a href="04-modul-fitur.html" class="group rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-brand-300 hover:shadow-md">
+              <div class="text-xs font-extrabold text-brand-600">04</div>
+              <div class="mt-1 font-extrabold text-slate-900">Modul Fitur</div>
+              <p class="mt-1 text-sm text-slate-600">Dashboard grafik, aset, arus kas, gaji/honor, Midtrans, landing.</p>
+            </a>
+            <a href="05-keamanan.html" class="group rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-brand-300 hover:shadow-md">
+              <div class="text-xs font-extrabold text-brand-600">05</div>
+              <div class="mt-1 font-extrabold text-slate-900">Keamanan & RBAC</div>
+              <p class="mt-1 text-sm text-slate-600">Isolasi berlapis, hak akses, key Midtrans, akses Super Admin, audit.</p>
+            </a>
+            <a href="06-roadmap.html" class="group rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-brand-300 hover:shadow-md">
+              <div class="text-xs font-extrabold text-brand-600">06</div>
+              <div class="mt-1 font-extrabold text-slate-900">Roadmap</div>
+              <p class="mt-1 text-sm text-slate-600">12 fase lintas repo, dari pondasi isolasi hingga go-live.</p>
+            </a>
+            <a href="08-langganan.html" class="group rounded-2xl border border-amber-200 bg-amber-50/40 p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-amber-300 hover:shadow-md">
+              <div class="text-xs font-extrabold text-amber-600">08 · BARU</div>
+              <div class="mt-1 font-extrabold text-slate-900">Langganan & Billing</div>
+              <p class="mt-1 text-sm text-slate-600">Paket, status trial/active/expired, tagihan, penegak expiry, halaman billing, Midtrans platform.</p>
+            </a>
+            <a href="09-operasional.html" class="group rounded-2xl border border-amber-200 bg-amber-50/40 p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-amber-300 hover:shadow-md">
+              <div class="text-xs font-extrabold text-amber-600">09 · BARU</div>
+              <div class="mt-1 font-extrabold text-slate-900">Kesiapan Operasional</div>
+              <p class="mt-1 text-sm text-slate-600">Backup+restore drill, Sentry/uptime/log, queue andal, email transaksional, lifecycle tenant.</p>
+            </a>
+            <a href="10-plan-lanjutan.html" class="group rounded-2xl border-2 border-violet-200 bg-violet-50/40 p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-violet-300 hover:shadow-md sm:col-span-2">
+              <div class="text-xs font-extrabold text-violet-600">10 · PLAN</div>
+              <div class="mt-1 font-extrabold text-slate-900">Plan Fitur Lanjutan</div>
+              <p class="mt-1 text-sm text-slate-600">Cash Basis Accounting, Slug otomatis + lokasi, Trial→berbayar (data preservation), Menu "Belum Diterima", dan <b>Multi-Pos Kas</b> (tunai/bank/Midtrans + transfer antar pos).</p>
+            </a>
+            <a href="07-sso.html" class="group rounded-2xl border border-slate-200 bg-slate-50 p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md sm:col-span-2">
+              <div class="text-xs font-extrabold text-slate-500">07 · DITUNDA (masa depan)</div>
+              <div class="mt-1 font-extrabold text-slate-700">SSO & Identitas (gmim_sso)</div>
+              <p class="mt-1 text-sm text-slate-500">Blueprint ekstraksi modul identitas → SSO/OIDC. <b>Tidak dibangun sekarang</b> (KF-2): identitas = modul Sanctum di gmim_api.</p>
+            </a>
+          </div>
+
+          <!-- Keputusan kunci -->
+          <h2 class="mb-2 text-2xl font-extrabold text-slate-900">Keputusan Arsitektur Kunci</h2>
+          <div class="mb-10 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+            <table class="w-full text-left text-sm">
+              <thead class="bg-slate-50 text-xs font-extrabold uppercase tracking-wide text-slate-500">
+                <tr><th class="px-4 py-3">#</th><th class="px-4 py-3">Keputusan</th><th class="px-4 py-3">Pilihan</th></tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100">
+                <tr><td class="px-4 py-3 font-bold text-brand-600">AD-1</td><td class="px-4 py-3">Isolasi tenant di URL</td><td class="px-4 py-3"><b>Path-based</b> <code>/g/&lt;slug&gt;</code> (subdomain = masa depan)</td></tr>
+                <tr><td class="px-4 py-3 font-bold text-brand-600">AD-2</td><td class="px-4 py-3">Database</td><td class="px-4 py-3">Single DB + <code>gereja_id</code></td></tr>
+                <tr><td class="px-4 py-3 font-bold text-brand-600">AD-3</td><td class="px-4 py-3">Isolasi data</td><td class="px-4 py-3">Global Scope + middleware + uji CI</td></tr>
+                <tr><td class="px-4 py-3 font-bold text-brand-600">AD-4</td><td class="px-4 py-3">Login</td><td class="px-4 py-3"><b>Modul auth (Sanctum)</b> + email global → <code>/g/&lt;slug&gt;</code></td></tr>
+                <tr class="bg-amber-50/50"><td class="px-4 py-3 font-bold text-amber-600">AD-11</td><td class="px-4 py-3">Langganan / Billing</td><td class="px-4 py-3"><b>Mesin langganan</b> + penegak expiry + Midtrans platform</td></tr>
+                <tr class="bg-amber-50/50"><td class="px-4 py-3 font-bold text-amber-600">AD-12</td><td class="px-4 py-3">Kesiapan operasional</td><td class="px-4 py-3">Backup+restore, observability, queue, email, lifecycle</td></tr>
+                <tr><td class="px-4 py-3 font-bold text-brand-600">AD-5</td><td class="px-4 py-3">Demo</td><td class="px-4 py-3">Client-only, <code>localStorage</code></td></tr>
+                <tr><td class="px-4 py-3 font-bold text-brand-600">AD-6</td><td class="px-4 py-3">Pendaftaran</td><td class="px-4 py-3">Self-service + onboarding dibantu</td></tr>
+                <tr><td class="px-4 py-3 font-bold text-brand-600">AD-8</td><td class="px-4 py-3">Midtrans persembahan</td><td class="px-4 py-3">Key per gereja, input Bendahara, server_key terenkripsi</td></tr>
+                <tr><td class="px-4 py-3 font-bold text-brand-600">AD-9</td><td class="px-4 py-3">Akses Super Admin</td><td class="px-4 py-3">Read-only + impersonasi ber-audit</td></tr>
+                <tr class="bg-slate-50 text-slate-400"><td class="px-4 py-3 font-bold">AD-10</td><td class="px-4 py-3">SSO terpisah</td><td class="px-4 py-3"><b>DITUNDA</b> → modul identitas di gmim_api dulu</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div id="page-footer"></div>
+        </div>
+      </main>
+    </div>
+
+    <script>window.PAGE = "index";</script>
+    <script src="_layout.js"></script>
+    <script type="module">
+      import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs";
+      mermaid.initialize({ startOnLoad: true, theme: "base", themeVariables: { fontFamily: "Inter, sans-serif", primaryColor: "#e0edff", primaryBorderColor: "#255deb", lineColor: "#94a3b8" } });
+    </script>
+  </body>
+</html>

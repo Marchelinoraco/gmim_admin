@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="id" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>07 · SSO & Identitas — Skema GMIM</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = { theme: { extend: {
+        fontFamily: { sans: ["Inter", "ui-sans-serif", "system-ui"] },
+        colors: { brand: { 50:"#f0f6ff",100:"#e0edff",200:"#cce1ff",300:"#a3caff",400:"#75aaff",500:"#4785ff",600:"#255deb",700:"#1d48c8",800:"#1e3e9f",900:"#1e367d",950:"#14224c" } },
+      } } };
+    </script>
+    <style>.mermaid{display:flex;justify-content:center}</style>
+  </head>
+  <body class="bg-slate-50 font-sans text-slate-700 antialiased">
+    <div class="mx-auto flex max-w-[100rem] flex-col lg:flex-row">
+      <aside class="sticky top-0 hidden h-screen w-72 flex-shrink-0 border-r border-slate-200 bg-white/80 p-5 backdrop-blur lg:block">
+        <a href="index.html" class="mb-6 flex items-center gap-3">
+          <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-brand-600 to-brand-800 text-2xl font-extrabold text-white shadow-lg ring-2 ring-white">G</div>
+          <div><div class="text-sm font-extrabold leading-tight text-slate-900">Keuangan GMIM</div><div class="text-xs font-medium text-slate-500">Skema Arsitektur SaaS</div></div>
+        </a>
+        <nav id="sidebar-nav" class="space-y-1"></nav>
+      </aside>
+      <div class="sticky top-0 z-40 flex items-center justify-between border-b border-slate-200 bg-white/90 px-4 py-3 backdrop-blur lg:hidden">
+        <span class="font-extrabold text-slate-900">Arsitektur GMIM</span>
+        <select id="mobile-nav" class="rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-sm font-semibold text-slate-700"></select>
+      </div>
+
+      <main class="min-w-0 flex-1 px-5 py-10 sm:px-8 lg:px-12">
+        <div class="mx-auto max-w-4xl">
+          <div class="mb-2 text-sm font-extrabold uppercase tracking-wider text-slate-500">Bagian 07 · DITUNDA (masa depan)</div>
+          <h1 class="text-3xl font-extrabold text-slate-900 sm:text-4xl">SSO & Identitas Terpusat</h1>
+          <div class="mt-4 rounded-2xl border-2 border-violet-300 bg-violet-50 p-5 text-sm text-violet-900">
+            🟣 <b>STATUS: DITUNDA (Keputusan Final KF-2).</b> SSO sebagai service terpisah (<code>gmim_sso</code>) <b>tidak dibangun sekarang</b>. Untuk MVP, identitas = <b>modul di <code>gmim_api</code></b> (Sanctum + email unik global), URL <b>path-based</b> <code>/g/&lt;slug&gt;</code> — "tanpa duplikasi user" sudah tercapai dari satu tabel <code>church_users</code> ber-email unik. Halaman ini = <b>blueprint ekstraksi masa depan</b> saat skala menuntut.
+          </div>
+          <p class="mt-4 text-lg text-slate-600">Rancangan target (saat diekstrak): backend identitas terpisah sebagai sumber tunggal akun; login lewat SSO; <code>gmim_api</code> memvalidasi token; tiap user terkunci satu gereja.</p>
+
+          <!-- Mengapa -->
+          <div class="mt-8 grid gap-3 sm:grid-cols-2">
+            <div class="rounded-2xl border border-violet-200 bg-violet-50/50 p-5"><div class="text-2xl">🆔</div><h3 class="mt-1 font-extrabold text-slate-900">Satu identitas</h3><p class="mt-1 text-sm text-slate-600">Satu tabel <code>users</code> di SSO → tidak ada duplikasi user antar tenant.</p></div>
+            <div class="rounded-2xl border border-violet-200 bg-violet-50/50 p-5"><div class="text-2xl">🚪</div><h3 class="mt-1 font-extrabold text-slate-900">Satu pintu login</h3><p class="mt-1 text-sm text-slate-600">Login dari domain utama → SSO autentikasi → kirim token ke backend utama.</p></div>
+            <div class="rounded-2xl border border-violet-200 bg-violet-50/50 p-5"><div class="text-2xl">🔐</div><h3 class="mt-1 font-extrabold text-slate-900">Password terpusat</h3><p class="mt-1 text-sm text-slate-600"><code>gmim_api</code> tak pernah simpan password — hanya di SSO.</p></div>
+            <div class="rounded-2xl border border-violet-200 bg-violet-50/50 p-5"><div class="text-2xl">⛓️</div><h3 class="mt-1 font-extrabold text-slate-900">Terkunci 1 gereja</h3><p class="mt-1 text-sm text-slate-600">Token membawa <code>gereja_id</code>; akses subdomain lain ditolak.</p></div>
+          </div>
+
+          <!-- Posisi -->
+          <h2 class="mt-12 text-2xl font-extrabold text-slate-900">Posisi dalam Sistem</h2>
+          <div class="mt-5 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <pre class="mermaid">
+flowchart TD
+    UI[app. UI login/daftar]:::auth -->|OIDC Auth Code + PKCE| SSO[gmim_sso · IdP<br/>users · /authorize /token /jwks]:::sso
+    SSO -->|JWT RS256 terikat gereja_id| MAN[slug. gmim_manage]:::app
+    MAN -->|Bearer JWT| API[gmim_api · backend utama]:::api
+    SSO -.->|JWKS kunci publik| API
+    API -->|validasi lokal, tanpa call SSO| API
+    classDef auth fill:#cce1ff,stroke:#1d48c8,color:#14224c;
+    classDef sso fill:#ede9fe,stroke:#7c3aed,color:#3b0764;
+    classDef app fill:#dcfce7,stroke:#16a34a,color:#14532d;
+    classDef api fill:#1e293b,stroke:#0f172a,color:#fff;
+            </pre>
+          </div>
+
+          <!-- Token -->
+          <h2 class="mt-12 text-2xl font-extrabold text-slate-900">Token (JWT access)</h2>
+          <p class="mt-2 text-slate-600">Ditandatangani kunci privat SSO (RS256), divalidasi <code>gmim_api</code> via JWKS. Dua klaim kunci menegakkan keamanan:</p>
+          <div class="mt-5 overflow-hidden rounded-2xl border border-slate-800 bg-slate-900 p-5 text-sm shadow-sm">
+            <pre class="text-slate-200"><code>{
+  "iss": "https://sso.gmim-keuangan.id",
+  <span class="text-violet-300">"sub": "usr_01HX..."</span>,        <span class="text-slate-500">// identitas tunggal → anti-duplikasi</span>
+  "email": "bendahara@bethesda.id",
+  <span class="text-emerald-300">"gereja_id": "g-001"</span>,        <span class="text-slate-500">// PENGIKAT: token hanya untuk gereja ini</span>
+  <span class="text-emerald-300">"aud": "bethesda"</span>,
+  "role": "bendahara",
+  "iat": 1735900000,
+  "exp": 1735900900             <span class="text-slate-500">// pendek (±15 menit) + refresh token di SSO</span>
+}</code></pre>
+          </div>
+
+          <!-- Penegakan 1 gereja -->
+          <h2 class="mt-12 text-2xl font-extrabold text-slate-900">Penegakan "1 user → 1 gereja"</h2>
+          <div class="mt-5 space-y-2">
+            <div class="flex items-start gap-3 rounded-xl border border-slate-200 bg-white p-4 shadow-sm"><span class="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg bg-violet-100 text-xs font-extrabold text-violet-700">1</span><span class="text-sm"><b>SSO</b> menerbitkan token dengan <code>gereja_id</code> dari <code>user_gereja</code> (MVP: satu-satunya gerejanya).</span></div>
+            <div class="flex items-start gap-3 rounded-xl border border-slate-200 bg-white p-4 shadow-sm"><span class="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg bg-violet-100 text-xs font-extrabold text-violet-700">2</span><span class="text-sm"><b>gmim_api</b> <code>VerifySsoToken</code> menolak <b>403</b> bila <code>gereja_id</code> token ≠ subdomain diakses.</span></div>
+            <div class="flex items-start gap-3 rounded-xl border border-slate-200 bg-white p-4 shadow-sm"><span class="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg bg-violet-100 text-xs font-extrabold text-violet-700">3</span><span class="text-sm"><b>Global Scope</b> membatasi semua query ke <code>gereja_id</code> itu (lihat <a class="font-semibold text-brand-700 underline" href="05-keamanan.html">Bagian 05</a>).</span></div>
+          </div>
+          <div class="mt-4 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800">Token gereja A dipakai ke subdomain gereja B → ditolak di langkah 2. Backend lupa filter → diamankan langkah 3. <b>Berlapis.</b></div>
+
+          <!-- Kepemilikan data -->
+          <h2 class="mt-12 text-2xl font-extrabold text-slate-900">Pembagian Kepemilikan Data</h2>
+          <div class="mt-5 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+            <table class="w-full text-left text-sm">
+              <thead class="bg-slate-50 text-xs font-extrabold uppercase tracking-wide text-slate-500"><tr><th class="px-4 py-3">Data</th><th class="px-4 py-3">Pemilik</th></tr></thead>
+              <tbody class="divide-y divide-slate-100">
+                <tr><td class="px-4 py-3">Email, password, profil</td><td class="px-4 py-3"><span class="rounded bg-violet-100 px-2 py-0.5 font-mono text-xs text-violet-700">gmim_sso.users</span></td></tr>
+                <tr><td class="px-4 py-3">Pemetaan user → gereja (routing)</td><td class="px-4 py-3"><span class="rounded bg-violet-100 px-2 py-0.5 font-mono text-xs text-violet-700">gmim_sso.user_gereja</span></td></tr>
+                <tr><td class="px-4 py-3">Peran & keanggotaan gereja</td><td class="px-4 py-3"><span class="rounded bg-slate-100 px-2 py-0.5 font-mono text-xs text-slate-700">gmim_api.church_members</span></td></tr>
+                <tr><td class="px-4 py-3">Semua data keuangan</td><td class="px-4 py-3"><span class="rounded bg-slate-100 px-2 py-0.5 font-mono text-xs text-slate-700">gmim_api (ber-gereja_id)</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Migrasi -->
+          <h2 class="mt-12 text-2xl font-extrabold text-slate-900">Migrasi dari Sanctum</h2>
+          <div class="mt-5 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <ol class="space-y-2 text-sm text-slate-700">
+              <li><b>1.</b> Bangun <code>gmim_sso</code> (Laravel + Passport) + tabel <code>users</code>.</li>
+              <li><b>2.</b> Pindahkan identitas tiap <code>church_users</code> → SSO <code>users</code> (email + hash, atau undangan set-password).</li>
+              <li><b>3.</b> Tambah <code>church_users.sso_user_id</code>; isi pemetaan; <b>hapus kolom password</b>.</li>
+              <li><b>4.</b> Ganti <code>auth:sanctum</code> → <code>VerifySsoToken</code> di <code>gmim_api</code>.</li>
+              <li><b>5.</b> Ganti login FE → alur OIDC (redirect SSO → exchange code → JWT).</li>
+              <li><b>6.</b> Dual-run saat transisi, lalu cutover.</li>
+            </ol>
+          </div>
+
+          <!-- Keputusan -->
+          <h2 class="mt-12 text-2xl font-extrabold text-slate-900">Keputusan Terbuka (SSO)</h2>
+          <div class="mt-5 space-y-2 text-sm">
+            <div class="rounded-xl border-l-4 border-violet-500 bg-white p-4 shadow-sm"><b>Protokol:</b> OIDC/Passport penuh (rekomendasi) vs JWT ringan buatan sendiri.</div>
+            <div class="rounded-xl border-l-4 border-violet-500 bg-white p-4 shadow-sm"><b>Peran di token:</b> resolve di gmim_api (rekomendasi) vs embed klaim.</div>
+            <div class="rounded-xl border-l-4 border-violet-500 bg-white p-4 shadow-sm"><b>Domain SSO:</b> <code>sso.</code> terpisah vs menyatu dengan <code>app.</code></div>
+            <div class="rounded-xl border-l-4 border-violet-500 bg-white p-4 shadow-sm"><b>Multi-gereja per user:</b> kunci 1:1 (MVP) vs pemilih gereja.</div>
+          </div>
+
+          <div id="page-footer"></div>
+        </div>
+      </main>
+    </div>
+    <script>window.PAGE = "07";</script>
+    <script src="_layout.js"></script>
+    <script type="module">
+      import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs";
+      mermaid.initialize({ startOnLoad: true, theme: "base", themeVariables: { fontFamily: "Inter, sans-serif", primaryColor: "#ede9fe", primaryBorderColor: "#7c3aed", lineColor: "#94a3b8" } });
+    </script>
+  </body>
+</html>

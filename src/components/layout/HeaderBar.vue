@@ -1,23 +1,32 @@
 <script setup>
 import { computed } from "vue"
-import { useRoute } from "vue-router"
-import { Menu, Shield } from "lucide-vue-next"
+import { useRoute, useRouter } from "vue-router"
+import { Menu, Shield, LogOut } from "lucide-vue-next"
+import { useAdminAuthStore } from "@/stores/adminAuthStore"
 
-const emit = defineEmits(["toggleSidebar"])
-const route = useRoute()
+const emit    = defineEmits(["toggleSidebar"])
+const route   = useRoute()
+const router  = useRouter()
+const auth    = useAdminAuthStore()
 
 const breadcrumb = computed(() => {
   const p = route.path
   if (p.startsWith("/super-admin/gereja/") && p.endsWith("/edit")) return ["Gereja", "Edit"]
-  if (p.match(/^\/super-admin\/gereja\/[^/]+$/))                  return ["Gereja", "Detail"]
+  if (p.match(/^\/super-admin\/gereja\/[^/]+$/))                   return ["Gereja", "Detail"]
   if (p === "/super-admin/gereja/tambah")                          return ["Gereja", "Tambah"]
   if (p === "/super-admin/gereja")                                 return ["Gereja"]
   if (p.startsWith("/super-admin/bendahara/") && p.endsWith("/edit")) return ["Bendahara", "Edit"]
-  if (p.match(/^\/super-admin\/bendahara\/[^/]+$/))               return ["Bendahara", "Detail"]
+  if (p.match(/^\/super-admin\/bendahara\/[^/]+$/))                return ["Bendahara", "Detail"]
   if (p === "/super-admin/bendahara/tambah")                       return ["Bendahara", "Tambah"]
   if (p === "/super-admin/bendahara")                              return ["Bendahara"]
+  if (p === "/super-admin/langganan")                              return ["Langganan"]
   return ["Dashboard"]
 })
+
+async function handleLogout() {
+  await auth.logout()
+  router.push({ name: "Login" })
+}
 </script>
 
 <template>
@@ -30,7 +39,6 @@ const breadcrumb = computed(() => {
         <Menu class="h-4 w-4" />
       </button>
 
-      <!-- Breadcrumb -->
       <nav class="flex items-center gap-1.5 text-sm">
         <span class="text-muted-foreground">Super Admin</span>
         <template v-for="(crumb, i) in breadcrumb" :key="i">
@@ -43,12 +51,19 @@ const breadcrumb = computed(() => {
     </div>
 
     <div class="flex items-center gap-2">
-      <div class="flex items-center gap-2 px-3 py-1.5 rounded-md bg-muted">
-        <div class="flex h-6 w-6 items-center justify-center rounded-full bg-primary">
+      <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-md bg-muted">
+        <div class="flex h-6 w-6 items-center justify-center rounded-full bg-primary shrink-0">
           <Shield class="h-3 w-3 text-primary-foreground" />
         </div>
-        <span class="text-sm font-medium hidden sm:block">Super Admin</span>
+        <span class="text-sm font-medium">{{ auth.nama || "Super Admin" }}</span>
       </div>
+      <button
+        class="inline-flex items-center gap-1.5 h-9 px-3 rounded-md text-sm font-medium text-destructive hover:bg-destructive/10 transition-colors"
+        @click="handleLogout"
+      >
+        <LogOut class="h-4 w-4" />
+        <span class="hidden sm:inline">Logout</span>
+      </button>
     </div>
   </header>
 </template>

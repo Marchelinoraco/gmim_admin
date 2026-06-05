@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="id" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>03 · Model Data (ERD) — Skema GMIM</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = { theme: { extend: {
+        fontFamily: { sans: ["Inter", "ui-sans-serif", "system-ui"] },
+        colors: { brand: { 50:"#f0f6ff",100:"#e0edff",200:"#cce1ff",300:"#a3caff",400:"#75aaff",500:"#4785ff",600:"#255deb",700:"#1d48c8",800:"#1e3e9f",900:"#1e367d",950:"#14224c" } },
+      } } };
+    </script>
+    <style>.mermaid{display:flex;justify-content:center}</style>
+  </head>
+  <body class="bg-slate-50 font-sans text-slate-700 antialiased">
+    <div class="mx-auto flex max-w-[100rem] flex-col lg:flex-row">
+      <aside class="sticky top-0 hidden h-screen w-72 flex-shrink-0 border-r border-slate-200 bg-white/80 p-5 backdrop-blur lg:block">
+        <a href="index.html" class="mb-6 flex items-center gap-3">
+          <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-brand-600 to-brand-800 text-2xl font-extrabold text-white shadow-lg ring-2 ring-white">G</div>
+          <div><div class="text-sm font-extrabold leading-tight text-slate-900">Keuangan GMIM</div><div class="text-xs font-medium text-slate-500">Skema Arsitektur SaaS</div></div>
+        </a>
+        <nav id="sidebar-nav" class="space-y-1"></nav>
+      </aside>
+      <div class="sticky top-0 z-40 flex items-center justify-between border-b border-slate-200 bg-white/90 px-4 py-3 backdrop-blur lg:hidden">
+        <span class="font-extrabold text-slate-900">Arsitektur GMIM</span>
+        <select id="mobile-nav" class="rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-sm font-semibold text-slate-700"></select>
+      </div>
+
+      <main class="min-w-0 flex-1 px-5 py-10 sm:px-8 lg:px-12">
+        <div class="mx-auto max-w-4xl">
+          <div class="mb-2 text-sm font-extrabold uppercase tracking-wider text-brand-600">Bagian 03</div>
+          <h1 class="text-3xl font-extrabold text-slate-900 sm:text-4xl">Model Data</h1>
+          <p class="mt-3 text-lg text-slate-600">Single DB, semua tabel ber-<code>gereja_id</code>. Hijau = tabel baru yang diusulkan.</p>
+
+          <!-- ERD -->
+          <h2 class="mt-10 text-2xl font-extrabold text-slate-900">Diagram Relasi (ERD)</h2>
+          <div class="mt-5 overflow-x-auto rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <pre class="mermaid">
+erDiagram
+    gereja ||--o{ church_users : punya
+    gereja ||--|| gereja_midtrans : "1-1"
+    gereja ||--o{ kategori_persembahan : punya
+    kategori_persembahan ||--o{ nama_persembahan : punya
+    gereja ||--o{ pemasukan : punya
+    gereja ||--o{ kategori_pengeluaran : punya
+    kategori_pengeluaran ||--o{ pengeluaran : punya
+    gereja ||--o{ aset : punya
+    gereja ||--o{ pegawai : punya
+    pegawai ||--o{ pembayaran_gaji : punya
+    pembayaran_gaji ||--o| pengeluaran : "saat dibayar"
+    gereja ||--o{ periode_buku : punya
+    gereja ||--o{ audit_log : mencatat
+
+    gereja {
+        string id PK
+        string nama
+        string subdomain "BARU unik"
+        string status_langganan "BARU"
+        string status_domain "BARU"
+    }
+    church_users {
+        string id PK
+        string gereja_id FK
+        string email "BARU unik global"
+        string role "+admin_gereja +viewer"
+        string status "BARU"
+    }
+    pemasukan {
+        string id PK
+        string gereja_id FK
+        string sumber "manual|midtrans"
+        string status "pending|approved|rejected"
+        bigint jumlah
+    }
+    aset {
+        string id PK
+        string gereja_id FK
+        string kategori
+        bigint nilai_perolehan
+        string kondisi
+    }
+    pegawai {
+        string id PK
+        string gereja_id FK
+        string tipe "gaji_tetap|honor"
+        bigint nominal_default
+    }
+    pembayaran_gaji {
+        string id PK
+        string pegawai_id FK
+        string periode
+        bigint nominal
+        string status
+    }
+    periode_buku {
+        string id PK
+        string gereja_id FK
+        string periode
+        bigint saldo_akhir
+        string status "open|closed"
+    }
+            </pre>
+          </div>
+
+          <!-- Tabel baru ringkas -->
+          <h2 class="mt-12 text-2xl font-extrabold text-slate-900">Tabel Baru yang Diusulkan</h2>
+          <div class="mt-5 grid gap-4 sm:grid-cols-2">
+            <div class="rounded-2xl border border-emerald-200 bg-emerald-50/60 p-5">
+              <h3 class="font-extrabold text-emerald-900">aset</h3>
+              <p class="mt-1 text-sm text-emerald-800">Inventaris gereja: tanah, bangunan, kendaraan, alat musik, elektronik, inventaris. Nilai perolehan & nilai sekarang (penyusutan opsional), kondisi, lokasi, foto.</p>
+            </div>
+            <div class="rounded-2xl border border-emerald-200 bg-emerald-50/60 p-5">
+              <h3 class="font-extrabold text-emerald-900">pegawai + pembayaran_gaji</h3>
+              <p class="mt-1 text-sm text-emerald-800">Master pekerja (gaji tetap/honor) & realisasi pembayaran per periode. Saat dibayar → otomatis jadi <code>pengeluaran</code> kategori "Gaji & Honor".</p>
+            </div>
+            <div class="rounded-2xl border border-emerald-200 bg-emerald-50/60 p-5">
+              <h3 class="font-extrabold text-emerald-900">periode_buku</h3>
+              <p class="mt-1 text-sm text-emerald-800">Snapshot + status tutup buku bulanan/tahunan. Saat <code>closed</code>, transaksi periode terkunci.</p>
+            </div>
+            <div class="rounded-2xl border border-emerald-200 bg-emerald-50/60 p-5">
+              <h3 class="font-extrabold text-emerald-900">audit_log + platform_admins</h3>
+              <p class="mt-1 text-sm text-emerald-800">Jejak audit (akses Super Admin & aksi sensitif) dan akun Super Admin yang terpisah dari <code>church_users</code>.</p>
+            </div>
+          </div>
+
+          <!-- Perubahan kolom -->
+          <h2 class="mt-12 text-2xl font-extrabold text-slate-900">Perubahan Tabel yang Ada</h2>
+          <div class="mt-5 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+            <table class="w-full text-left text-sm">
+              <thead class="bg-slate-50 text-xs font-extrabold uppercase tracking-wide text-slate-500"><tr><th class="px-4 py-3">Tabel</th><th class="px-4 py-3">Tambahan</th></tr></thead>
+              <tbody class="divide-y divide-slate-100">
+                <tr><td class="px-4 py-3 font-mono text-brand-700">gereja</td><td class="px-4 py-3">subdomain (unik), nama_pendeta, telepon, email, status_langganan, paket_langganan, status_domain, bergabung_pada, langganan_berakhir, softDeletes</td></tr>
+                <tr><td class="px-4 py-3 font-mono text-brand-700">church_users</td><td class="px-4 py-3">email (unik global), telepon, status, login_terakhir, role baru (admin_gereja, viewer), softDeletes</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="mt-6 rounded-xl border border-slate-200 bg-white p-4 text-sm text-slate-600">
+            Field perluasan <code>gereja</code> sengaja mencerminkan <code>dummyGereja</code> yang sudah dipakai UI <b>gmim_admin</b> (subdomain, statusDomain, paketLangganan…) sehingga UI admin tinggal disambungkan ke API.
+          </div>
+
+          <div id="page-footer"></div>
+        </div>
+      </main>
+    </div>
+    <script>window.PAGE = "03";</script>
+    <script src="_layout.js"></script>
+    <script type="module">
+      import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs";
+      mermaid.initialize({ startOnLoad: true, theme: "base", themeVariables: { fontFamily: "Inter, sans-serif", primaryColor: "#e0edff", primaryBorderColor: "#255deb", lineColor: "#94a3b8" } });
+    </script>
+  </body>
+</html>

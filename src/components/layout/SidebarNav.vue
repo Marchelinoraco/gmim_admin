@@ -1,7 +1,7 @@
 <script setup>
 import { computed } from "vue"
 import { useRoute, useRouter } from "vue-router"
-import { LayoutDashboard, Church, Users, ChevronRight, Shield } from "lucide-vue-next"
+import { LayoutDashboard, Church, Users, CreditCard, ChevronRight, Shield } from "lucide-vue-next"
 import { cn } from "@/lib/utils"
 
 defineProps({ collapsed: { type: Boolean, default: false } })
@@ -13,16 +13,18 @@ const router = useRouter()
 const active = computed(() => {
   const p = route.path
   return {
-    dashboard: p.startsWith("/super-admin/dashboard"),
-    gereja:    p.startsWith("/super-admin/gereja"),
-    bendahara: p.startsWith("/super-admin/bendahara"),
+    dashboard:  p.startsWith("/super-admin/dashboard"),
+    gereja:     p.startsWith("/super-admin/gereja"),
+    bendahara:  p.startsWith("/super-admin/bendahara"),
+    langganan:  p.startsWith("/super-admin/langganan"),
   }
 })
 
 const menus = [
-  { key: "dashboard", label: "Dashboard", icon: LayoutDashboard, path: "/super-admin/dashboard" },
-  { key: "gereja",    label: "Gereja",    icon: Church,          path: "/super-admin/gereja" },
-  { key: "bendahara", label: "Bendahara", icon: Users,           path: "/super-admin/bendahara" },
+  { key: "dashboard",  label: "Dashboard",  icon: LayoutDashboard, path: "/super-admin/dashboard" },
+  { key: "gereja",     label: "Gereja",     icon: Church,          path: "/super-admin/gereja" },
+  { key: "bendahara",  label: "Pengguna",   icon: Users,           path: "/super-admin/bendahara" },
+  { key: "langganan",  label: "Langganan",  icon: CreditCard,      path: "/super-admin/langganan" },
 ]
 
 function navigateTo(path) {
